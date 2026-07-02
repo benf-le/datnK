@@ -55,7 +55,7 @@ $(document).ready(function () {
         $.post("/chat/send", { message: msgText }, function (res) {
             // Xóa Typing Indicator
             hideTypingIndicator();
-            
+
             // Kích hoạt lại input
             $("#message-input").prop("disabled", false).focus();
             $("#send-btn").prop("disabled", false);
@@ -63,12 +63,16 @@ $(document).ready(function () {
             // Hiển thị tin nhắn trả về từ Bot
             if (res.bot) {
                 appendOne(res.bot);
+            } else {
+                console.error("[Chat] Phản hồi /chat/send không có trường 'bot':", res);
             }
-        }).fail(function () {
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error("[Chat] Gọi /chat/send thất bại:", textStatus, errorThrown, jqXHR.responseText);
+
             hideTypingIndicator();
             $("#message-input").prop("disabled", false).focus();
             $("#send-btn").prop("disabled", false);
-            
+
             appendOne({
                 sender: "bot",
                 message: "Xin lỗi, hệ thống đang gặp lỗi. Bạn vui lòng thử lại sau.",
@@ -133,13 +137,20 @@ $(document).ready(function () {
             formattedMessage = escapeHtml(rawMessage).replace(/\n/g, "<br>");
         } else {
             // Đối với bot, sử dụng marked.js để render Markdown sang HTML nếu thư viện hoạt động
+            let fallbackFormat = () => escapeHtml(rawMessage)
+                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                .replace(/\n/g, "<br>");
+
             if (typeof marked !== 'undefined') {
-                formattedMessage = marked.parse(rawMessage);
+                try {
+                    formattedMessage = marked.parse(rawMessage);
+                } catch (err) {
+                    console.error("[Chat] marked.parse() lỗi, dùng fallback text thô:", err, rawMessage);
+                    formattedMessage = fallbackFormat();
+                }
             } else {
                 // Phương án dự phòng (fallback) nếu không có marked.js
-                formattedMessage = escapeHtml(rawMessage)
-                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                    .replace(/\n/g, "<br>");
+                formattedMessage = fallbackFormat();
             }
         }
 
