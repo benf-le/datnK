@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # 1. FastAPI RAG Application Service
+  rag-service:
+    build:
+      context: ./verifySupp-rag
+      dockerfile: Dockerfile
+    container_name: fastapi_rag_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./verifySupp-rag:/app
+      # Avoid mounting host's venv/pycache to container
+      - /app/venv
+      - /app/__pycache__
+    env_file:
+      - ./verifySupp-rag/.env
+    environment:
+      - PORT=8000
+    restart: always
+
+  # 2. Laravel e-Commerce Web Server
+  laravel-app:
+    build:
+      context: ./food-ecommerce
+      dockerfile: Dockerfile
+    container_name: laravel_web_app
+    ports:
+      - "8001:80"
+    volumes:
+      - ./food-ecommerce:/var/www/html
+      # Isolated named volumes to prevent host dependencies (Windows) from conflicting with container dependencies (Linux)
+      - laravel-vendor:/var/www/html/vendor
+      - laravel-node-modules:/var/www/html/node_modules
+    env_file:
+      - ./food-ecommerce/.env
+    environment:
+      # Connect to RAG service using the service name inside the docker network
+      - RAG_SERVICE_URL=http://rag-service:8000
+    depends_on:
+      - rag-service
+    restart: always
+
+  # 3. Laravel Queue Worker (Processes product sync to RAG)
+  laravel-worker:
+    build:
+      context: ./food-ecommerce
+      dockerfile: Dockerfile
+    container_name: laravel_queue_worker
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    volumes:
+      - ./food-ecommerce:/var/www/html
+      - laravel-vendor:/var/www/html/vendor
+      - laravel-node-modules:/var/www/html/node_modules
+    env_file:
+      - ./food-ecommerce/.env
+    environment:
+      - RAG_SERVICE_URL=http://rag-service:8000
+    depends_on:
+      - laravel-app
+    restart: always
+
+volumes:
+  laravel-vendor:
+  laravel-node-modules:

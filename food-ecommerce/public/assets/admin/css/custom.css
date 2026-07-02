@@ -1,0 +1,159 @@
+/* Nút upload tùy chỉnh */
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 18px;
+    background-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.15s ease;
+    margin: 10px 0;
+}
+
+.custom-file-upload:hover {
+    background-color: #005fbf;
+    transform: translateY(-1px);
+}
+
+/* Ẩn input file gốc */
+#category-image,
+#product-images {
+    display: none;
+}
+
+/* Khung ảnh preview */
+.image-preview {
+    margin-top: 12px;
+    max-width: 220px;
+    max-height: 220px;
+    border: 2px solid #007bff;
+    border-radius: 6px;
+    padding: 6px;
+    object-fit: cover; /* Giữ ảnh không méo */
+    display: block; /* Loại bỏ khoảng trắng */
+    background: #f8f9fa; /* Cho nền nhẹ nhàng */
+}
+
+.image-category,
+.image-product {
+    width: 80px;
+    height: 80px;
+}
+
+.btn-update-category,
+.btn-update-product {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+
+    padding: 3px 10px !important; /* ↓ thấp hơn, nhỏ hơn */
+    font-size: 13px !important; /* chữ nhỏ gọn */
+    font-weight: 500 !important;
+
+    border-radius: 5px !important;
+    border: none !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+
+    transition: 0.2s ease !important;
+    color: #fff !important;
+    background-color: #0d6efd !important;
+}
+
+.btn-update-category:hover,
+.btn-update-product:hover {
+    background-color: #0b5ed7 !important;
+}
+
+.btn-update-category i,
+.btn-update-product i {
+    font-size: 14px !important; /* icon nhỏ theo */
+    color: #fff !important;
+}
+
+.btn-delete-category,
+.btn-delete-product {
+    display: inline-flex !important;
+    align-items: center !important; /* căn giữa theo chiều dọc */
+    justify-content: center !important; /* căn giữa theo chiều ngang */
+    gap: 4px !important;
+
+    padding: 4px 12px !important; /* vừa, nhỏ, cân */
+    font-size: 13px !important;
+    line-height: 1 !important; /* tránh bị đội chiều cao */
+    font-weight: 500 !important;
+
+    border-radius: 5px !important;
+    border: none !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+
+    transition: 0.2s ease !important;
+    color: #fff !important;
+    background-color: #dc3545 !important;
+}
+
+.btn-delete-category:hover,
+.btn-delete-product:hover {
+    background-color: #bb2d3b !important;
+}
+
+.btn-delete-category i,
+.btn-delete-product i {
+    font-size: 14px !important;
+    color: #fff !important;
+    line-height: 1 !important; /* icon không bị lệch */
+}
+
+.category-image,
+.product-images {
+    display: none;
+}
+
+.image-preview-listproduct {
+    display: flex;
+    flex-wrap: wrap; /* tự xuống dòng */
+    gap: 10px; /* khoảng cách giữa ảnh */
+}
+
+.image-preview-listproduct img {
+    width: calc(20% - 10px); /* 5 ảnh mỗi hàng */
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.custom-badge {
+    padding: 10px 10px;
+    font-size: 10px;
+    width: 100px;
+}
+
+.totalPrice {
+    display: flex;
+    justify-content: right;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #ccc;
+    font-size: 15px;
+}
+
+.img-account {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.custom-message-top {
+    white-space: unset !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* Số dòng hiển thị */
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+}

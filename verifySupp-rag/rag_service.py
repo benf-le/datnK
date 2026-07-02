@@ -1,0 +1,443 @@
+import os
+import uuid
+from dotenv import load_dotenv
+from openai import AsyncOpenAI
+from qdrant_client import AsyncQdrantClient
+from qdrant_client.http import models
+
+# Load các biến môi trường từ file .env
+load_dotenv()
+
+# Cấu hình từ file .env
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-large")
+
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", "")
+QDRANT_COLLECTION_NAME = os.getenv("QDRANT_COLLECTION_NAME", "knowledge_base")
+
+# Khởi tạo OpenAI Client bất đồng bộ
+async_openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+
+# Khởi tạo Qdrant Client bất đồng bộ
+if QDRANT_API_KEY:
+    print(f"[Qdrant] Đang kết nối async tới Qdrant Cloud tại: {QDRANT_URL}")
+    async_qdrant_client = AsyncQdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+else:
+    print(f"[Qdrant] Đang kết nối async tới Qdrant Local tại: {QDRANT_URL}")
+    async_qdrant_client = AsyncQdrantClient(url=QDRANT_URL)
+
+
+def chunk_text(text: str, chunk_size: int = 1000, chunk_overlap: int = 100) -> list[str]:
+    """
+    Chia nhỏ văn bản dài thành các đoạn (chunks) có kích thước cố định kèm độ gối đầu (overlap).
+    Sử dụng cơ chế cắt chuỗi đơn giản theo số ký tự.
+    """
+    chunks = []
+    start = 0
+    text = text.strip()
+    
+    while start < len(text):
+        end = start + chunk_size
+        chunk = text[start:end]
+        chunks.append(chunk)
+        start += (chunk_size - chunk_overlap)
+        
+    return chunks
+
+
+async def async_get_embedding(text: str) -> list[float]:
+    """
+    Chuyển đổi một đoạn văn bản thành vector biểu diễn ngữ nghĩa (embedding) bất đồng bộ.
+    """
+    response = await async_openai_client.embeddings.create(
+        input=text,
+        model=EMBEDDING_MODEL
+    )
+    return response.data[0].embedding
+
+
+async def async_get_embeddings_batch(texts: list[str]) -> list[list[float]]:
+    """
+    Tạo embedding cho danh sách các đoạn văn bản cùng một lúc (Batching).
+    """
+    if not texts:
+        return []
+    response = await async_openai_client.embeddings.create(
+        input=texts,
+        model=EMBEDDING_MODEL
+    )
+    return [data.embedding for data in response.data]
+
+
+async def async_init_collection():
+    """
+    Khởi tạo collection trong Qdrant bất đồng bộ nếu chưa tồn tại.
+    - Kích thước vector: 3072 (text-embedding-3-large).
+    - Sử dụng Cosine Similarity.
+    - Tạo Payload Indexes cho doc_type và product_id để tối ưu hóa truy vấn/xóa.
+    """
+    exists = await async_qdrant_client.collection_exists(collection_name=QDRANT_COLLECTION_NAME)
+    if not exists:
+        print(f"[Qdrant] Collection '{QDRANT_COLLECTION_NAME}' chưa tồn tại. Tiến hành khởi tạo...")
+        await async_qdrant_client.create_collection(
+            collection_name=QDRANT_COLLECTION_NAME,
+            vectors_config=models.VectorParams(
+                size=3072,
+                distance=models.Distance.COSINE
+            )
+        )
+        print(f"[Qdrant] Đã tạo thành công collection: {QDRANT_COLLECTION_NAME}")
+        
+    # Đảm bảo Payload Indexes luôn được tạo (an toàn gọi nhiều lần)
+    try:
+        await async_qdrant_client.create_payload_index(
+            collection_name=QDRANT_COLLECTION_NAME,
+            field_name="doc_type",
+            field_schema=models.PayloadSchemaType.KEYWORD
+        )
+        await async_qdrant_client.create_payload_index(
+            collection_name=QDRANT_COLLECTION_NAME,
+            field_name="product_id",
+            field_schema=models.PayloadSchemaType.KEYWORD
+        )
+    except Exception as e:
+        print(f"[Qdrant] Lưu ý khi tạo Payload Index: {str(e)}")
+
+
+async def async_delete_product_vectors(product_id: str):
+    """
+    Xóa tất cả các point có payload.product_id trùng khớp với product_id để tránh trùng lặp/rác dữ liệu.
+    """
+    await async_init_collection()
+    print(f"[Qdrant] Đang xóa toàn bộ các vector cũ của product_id: '{product_id}'...")
+    await async_qdrant_client.delete(
+        collection_name=QDRANT_COLLECTION_NAME,
+        points_selector=models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="product_id",
+                    match=models.MatchValue(value=product_id)
+                )
+            ]
+        )
+    )
+    print(f"[Qdrant] Đã dọn dẹp xong vector cũ cho product_id: '{product_id}'.")
+
+
+async def async_ingest_product(
+    product_id: str,
+    name: str,
+    description: str,
+    price: float,
+    unit: str,
+    category: str
+) -> int:
+    """
+    Nạp dữ liệu sản phẩm có cấu trúc từ Admin vào Qdrant (Xóa trước, Nạp sau).
+    """
+    # 1. Khởi tạo collection nếu chưa có
+    await async_init_collection()
+    
+    # 2. Thực hiện xóa toàn bộ vector cũ của product_id này để tránh rác dữ liệu
+    await async_delete_product_vectors(product_id)
+    
+    # 3. Ráp dữ liệu thành Structured Markdown để giữ ngữ cảnh đầy đủ cho mỗi chunk
+    full_structured_text = (
+        f"Sản phẩm: {name}\n"
+        f"Danh mục: {category}\n"
+        f"Giá bán: {price:,} VNĐ / {unit}\n"
+        f"Mô tả sản phẩm: {description}"
+    )
+    
+    # 4. Phân mảnh (chunking) thông minh
+    chunks = chunk_text(full_structured_text, chunk_size=1000, chunk_overlap=100)
+    print(f"[Ingest] Đã phân mảnh sản phẩm '{name}' thành {len(chunks)} đoạn.")
+    
+    # 5. Tạo Embeddings hàng loạt (Batching) cho tất cả các chunk cùng lúc
+    print(f"[Ingest] Đang sinh embedding hàng loạt cho {len(chunks)} chunks...")
+    vectors = await async_get_embeddings_batch(chunks)
+    
+    # 6. Tạo PointStruct để upsert vào Qdrant kèm Metadata phong phú
+    points = []
+    for i, (chunk, vector) in enumerate(zip(chunks, vectors)):
+        point_id = str(uuid.uuid4())
+        points.append(
+            models.PointStruct(
+                id=point_id,
+                vector=vector,
+                payload={
+                    "text": chunk,
+                    "doc_type": "product",  # Đánh nhãn loại dữ liệu sản phẩm
+                    "product_id": product_id,
+                    "product_name": name,
+                    "product_category": category,
+                    "product_price": price,
+                    "product_unit": unit,
+                    "chunk_index": i
+                }
+            )
+        )
+        
+    # 7. Upsert hàng loạt vào Qdrant
+    print(f"[Qdrant] Đang lưu batch {len(points)} vectors cho sản phẩm '{name}'...")
+    await async_qdrant_client.upsert(
+        collection_name=QDRANT_COLLECTION_NAME,
+        points=points
+    )
+    print(f"[Qdrant] Đồng bộ thành công sản phẩm '{name}'!")
+    return len(chunks)
+
+
+async def async_ingest_document(text: str) -> int:
+    """
+    Nhập tài liệu tri thức văn bản thô vào Qdrant bất đồng bộ.
+    """
+    await async_init_collection()
+    chunks = chunk_text(text, chunk_size=500, chunk_overlap=50)
+    print(f"[Ingest] Đã phân mảnh tài liệu thành {len(chunks)} đoạn nhỏ.")
+    
+    vectors = await async_get_embeddings_batch(chunks)
+    
+    points = []
+    for i, (chunk, vector) in enumerate(zip(chunks, vectors)):
+        point_id = str(uuid.uuid4())
+        points.append(
+            models.PointStruct(
+                id=point_id,
+                vector=vector,
+                payload={
+                    "text": chunk,
+                    "doc_type": "general_knowledge",  # Đánh nhãn loại dữ liệu tài liệu chung
+                    "product_id": "general_knowledge",
+                    "product_name": "Tài liệu chung",
+                    "chunk_index": i
+                }
+            )
+        )
+        
+    await async_qdrant_client.upsert(
+        collection_name=QDRANT_COLLECTION_NAME,
+        points=points
+    )
+    print(f"[Qdrant] Lưu thành công tài liệu tri thức chung!")
+    return len(chunks)
+
+
+async def async_get_all_products() -> list[dict]:
+    """
+    Lấy toàn bộ danh sách sản phẩm từ Qdrant (Deduplicate bằng product_id trong Python để an toàn nhất).
+    """
+    await async_init_collection()
+    
+    result, _ = await async_qdrant_client.scroll(
+        collection_name=QDRANT_COLLECTION_NAME,
+        scroll_filter=models.Filter(
+            must=[
+                models.FieldCondition(key="doc_type", match=models.MatchValue(value="product"))
+            ]
+        ),
+        limit=1000,
+        with_payload=["product_id", "product_name", "product_category", "product_price", "product_unit"],
+        with_vectors=False
+    )
+    
+    seen_ids = set()
+    products = []
+    for hit in result:
+        payload = hit.payload
+        pid = payload.get("product_id")
+        if pid and pid not in seen_ids:
+            seen_ids.add(pid)
+            products.append({
+                "product_id": pid,
+                "name": payload.get("product_name"),
+                "category": payload.get("product_category"),
+                "price": payload.get("product_price"),
+                "unit": payload.get("product_unit")
+            })
+    return products
+
+
+async def async_search_similar_chunks(query: str, limit: int = 3) -> list[str]:
+    """
+    Tìm kiếm các đoạn văn bản có nghĩa gần nhất với câu hỏi bất đồng bộ.
+    """
+    await async_init_collection()
+    
+    # Bước 1: Sinh vector cho câu hỏi
+    query_vector = await async_get_embedding(query)
+    
+    # Bước 2: Truy vấn Qdrant
+    response = await async_qdrant_client.query_points(
+        collection_name=QDRANT_COLLECTION_NAME,
+        query=query_vector,
+        limit=limit
+    )
+    search_result = response.points
+    
+    # Bước 3: Lấy ra text từ payload
+    contexts = []
+    for hit in search_result:
+        contexts.append(hit.payload["text"])
+        doc_type = hit.payload.get("doc_type", "N/A")
+        prod_name = hit.payload.get("product_name", "N/A")
+        print(f"[Search] Tìm thấy chunk tương đồng (Score: {hit.score:.4f} | Type: {doc_type} | Name: {prod_name}): '{hit.payload.get('text', '')[:60]}...'")
+        
+    return contexts
+
+
+async def async_generate_rag_response(query: str, history: list = None) -> str:
+    """
+    Thực hiện luồng RAG hoàn chỉnh kết hợp Tool Calling để tự động chọn cách thức truy xuất dữ liệu từ Qdrant.
+    """
+    print(f"[RAG] Bắt đầu xử lý câu hỏi: '{query}'")
+    
+    # 1. GHÉP SYSTEM PROMPT
+    system_prompt = (
+        "Bạn là một Trợ lý ảo hỗ trợ khách hàng chuyên nghiệp, lịch sự và chu đáo của cửa hàng thực phẩm sạch FreshMart.\n"
+        "Nhiệm vụ của bạn là trả lời câu hỏi của khách hàng bằng cách sử dụng các công cụ (Tools) được cung cấp để truy vấn thông tin chính xác từ hệ thống.\n"
+        "Hãy tuân thủ nghiêm ngặt các nguyên tắc sau:\n"
+        "1. ĐA NGÔN NGỮ (Multi-language): Hãy trả lời câu hỏi bằng CHÍNH NGÔN NGỮ mà khách hàng đã dùng để hỏi.\n"
+        "   - Nếu khách hàng hỏi bằng tiếng Việt -> trả lời bằng tiếng Việt.\n"
+        "   - Nếu khách hàng hỏi bằng tiếng Anh -> dịch/trả lời bằng tiếng Anh.\n"
+        "2. CHỈ sử dụng thông tin thu thập được từ các công cụ (Tools) để trả lời. Không được tự ý bịa đặt hoặc suy diễn thông tin ngoài.\n"
+        "3. Trả lời ngắn gọn, súc tích, thân thiện và trực tiếp giải quyết câu hỏi của khách hàng.\n"
+        "4. Nếu thông tin thu thập được từ công cụ không đủ để trả lời câu hỏi, hãy phản hồi lịch sự bằng chính ngôn ngữ của người dùng:\n"
+        "   - Ví dụ (Tiếng Việt): \"Dạ, xin lỗi anh/chị, hiện tại em chưa thấy sản phẩm hoặc thông tin này trong hệ thống. Em sẽ ghi nhận để cập nhật sớm nhất ạ.\"\n"
+        "   - Ví dụ (Tiếng Anh): \"I am sorry, but I do not have information about this product or issue right now. I will record it to update as soon as possible.\"\n"
+    )
+    
+    # 2. CHUẨN BỊ MESSAGES KÈM LỊCH SỬ CHAT
+    messages = [{"role": "system", "content": system_prompt}]
+    
+    if history:
+        for msg in history:
+            role = "user" if msg.role == "user" else "assistant"
+            messages.append({"role": role, "content": msg.message})
+            
+    messages.append({"role": "user", "content": query})
+    
+    # 3. ĐỊNH NGHĨA TOOLS CHO LLM
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "get_product_count",
+                "description": "Lấy tổng số lượng sản phẩm hiện có trong cơ sở dữ liệu của cửa hàng FreshMart.",
+                "parameters": {"type": "object", "properties": {}}
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "list_all_products",
+                "description": "Lấy danh sách tất cả sản phẩm của cửa hàng FreshMart bao gồm tên, danh mục, giá bán và đơn vị tính.",
+                "parameters": {"type": "object", "properties": {}}
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "search_products_by_similarity",
+                "description": "Tìm kiếm các sản phẩm hoặc tài liệu tri thức liên quan bằng tìm kiếm tương đồng vector (Semantic Search). Sử dụng khi người dùng hỏi về sản phẩm cụ thể, thông tin chi tiết, công dụng, hoặc các thắc mắc chung về cửa hàng.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "search_query": {
+                            "type": "string",
+                            "description": "Từ khóa hoặc câu hỏi cần tìm kiếm thông tin tương đồng."
+                        }
+                    },
+                    "required": ["search_query"]
+                }
+            }
+        }
+    ]
+    
+    # Vòng lặp tối đa 2 lần để xử lý Tool Call
+    for iteration in range(2):
+        print(f"[LLM] Đang gọi OpenAI {OPENAI_MODEL} (Vòng {iteration + 1})...")
+        
+        client_kwargs = {
+            "model": OPENAI_MODEL,
+            "messages": messages,
+        }
+        
+        # Chỉ truyền tools ở lần đầu tiên (hoặc nếu cần)
+        if iteration == 0:
+            client_kwargs["tools"] = tools
+            
+        if not (OPENAI_MODEL.lower().startswith("o1") or "gpt-5" in OPENAI_MODEL.lower()):
+            client_kwargs["temperature"] = 0.0
+            
+        response = await async_openai_client.chat.completions.create(**client_kwargs)
+        response_message = response.choices[0].message
+        
+        # Nếu LLM không yêu cầu gọi tool nữa, trả về câu trả lời cuối cùng
+        if not response_message.tool_calls:
+            print("[RAG] Đã sinh ra câu trả lời thành công.")
+            return response_message.content
+            
+        # Nếu LLM yêu cầu gọi tool:
+        print(f"[LLM] Phát hiện yêu cầu gọi {len(response_message.tool_calls)} tool(s).")
+        messages.append(response_message)
+        
+        import json
+        for tool_call in response_message.tool_calls:
+            function_name = tool_call.function.name
+            function_args = json.loads(tool_call.function.arguments) if tool_call.function.arguments else {}
+            
+            tool_output = ""
+            print(f"[Tool] Đang thực thi tool '{function_name}' với tham số: {function_args}")
+            
+            try:
+                if function_name == "get_product_count":
+                    products = await async_get_all_products()
+                    count = len(products)
+                    tool_output = f"Tổng số lượng sản phẩm hiện có trong cửa hàng là: {count}"
+                    
+                elif function_name == "list_all_products":
+                    products = await async_get_all_products()
+                    if not products:
+                        tool_output = "Không có sản phẩm nào trong kho dữ liệu."
+                    else:
+                        lines = []
+                        for i, p in enumerate(products, 1):
+                            price_str = f"{p['price']:,} VNĐ" if p['price'] is not None else "Liên hệ"
+                            lines.append(f"{i}. {p['name']} (Danh mục: {p['category']}) - Giá: {price_str} / {p['unit']}")
+                        tool_output = "Danh sách tất cả sản phẩm:\n" + "\n".join(lines)
+                        
+                elif function_name == "search_products_by_similarity":
+                    search_query = function_args.get("search_query", query)
+                    contexts = await async_search_similar_chunks(search_query, limit=3)
+                    if not contexts:
+                        tool_output = "Không tìm thấy thông tin tương đồng nào trong hệ thống."
+                    else:
+                        tool_output = "Kết quả tìm thấy tương đồng:\n" + "\n---\n".join(contexts)
+                else:
+                    tool_output = f"Lỗi: Không tìm thấy tool có tên '{function_name}'."
+            except Exception as e:
+                tool_output = f"Lỗi khi thực thi tool: {str(e)}"
+                print(f"[Tool] Lỗi khi thực thi '{function_name}': {str(e)}")
+                
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "name": function_name,
+                "content": tool_output
+            })
+            
+    # Dự phòng: Cuộc gọi cuối cùng nếu vòng lặp kết thúc mà chưa trả về câu trả lời
+    print("[LLM] Đang thực hiện cuộc gọi cuối cùng để tổng hợp câu trả lời...")
+    client_kwargs = {
+        "model": OPENAI_MODEL,
+        "messages": messages,
+    }
+    if not (OPENAI_MODEL.lower().startswith("o1") or "gpt-5" in OPENAI_MODEL.lower()):
+        client_kwargs["temperature"] = 0.0
+    final_response = await async_openai_client.chat.completions.create(**client_kwargs)
+    print("[RAG] Đã sinh ra câu trả lời thành công.")
+    return final_response.choices[0].message.content
+
