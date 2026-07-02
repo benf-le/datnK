@@ -4,18 +4,18 @@ services:
   # 1. FastAPI RAG Application Service
   rag-service:
     build:
-      context: ./verifySupp-rag
+      context: ./food-support-rag
       dockerfile: Dockerfile
     container_name: fastapi_rag_app
     ports:
       - "8000:8000"
     volumes:
-      - ./verifySupp-rag:/app
+      - ./food-support-rag:/app
       # Avoid mounting host's venv/pycache to container
       - /app/venv
       - /app/__pycache__
     env_file:
-      - ./verifySupp-rag/.env
+      - ./food-support-rag/.env
     environment:
       - PORT=8000
     restart: always

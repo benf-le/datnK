@@ -1,6 +1,6 @@
 # Hướng dẫn chạy Dự án với Docker Compose
 
-Tài liệu này hướng dẫn cách chạy song song hai dự án **food-ecommerce** (Laravel) và **verifySupp-rag** (Python/FastAPI RAG) bằng Docker Compose.
+Tài liệu này hướng dẫn cách chạy song song hai dự án **food-ecommerce** (Laravel) và **food-support-rag** (Python/FastAPI RAG) bằng Docker Compose.
 
 ---
 
@@ -18,7 +18,7 @@ Hệ thống sử dụng file `docker-compose.yml` ở thư mục gốc để đ
 > Cả 2 dự án đều sử dụng dịch vụ Cloud (Database Neon PGSQL & Vector DB Qdrant Cloud), hãy đảm bảo máy tính của bạn đang **kết nối mạng** ổn định trước khi build Docker.
 
 ### Bước 1: Kiểm tra cấu hình môi trường (.env)
-* **`verifySupp-rag/.env`**: Chứa thông tin cấu hình cho OpenAI API Key và Qdrant Cloud URL.
+* **`food-support-rag/.env`**: Chứa thông tin cấu hình cho OpenAI API Key và Qdrant Cloud URL.
 * **`food-ecommerce/.env`**: Chứa liên kết tới database PostgreSQL (Neon).
   > **Lưu ý:** Bạn không cần sửa đổi file `.env` thủ công. Docker Compose đã tự động thiết lập để Laravel gọi đến `rag-service` qua tên dịch vụ nội bộ `http://rag-service:8000` mà không ảnh hưởng tới cấu hình chạy local ngoài Docker (`http://127.0.0.1:8000`).
 
