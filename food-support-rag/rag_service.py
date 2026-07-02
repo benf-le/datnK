@@ -340,8 +340,16 @@ async def async_generate_rag_response(query: str, history: list = None) -> str:
         {
             "type": "function",
             "function": {
-                "name": "search_products_by_similarity",
-                "description": "Tìm kiếm các sản phẩm hoặc tài liệu tri thức liên quan bằng tìm kiếm tương đồng vector (Semantic Search). Sử dụng khi người dùng hỏi về sản phẩm cụ thể, thông tin chi tiết, công dụng, hoặc các thắc mắc chung về cửa hàng.",
+                "name": "search_knowledge_base",
+                "description": (
+                    "Tìm kiếm thông tin trong cơ sở tri thức của cửa hàng KFood bằng tìm kiếm tương đồng vector (Semantic Search). "
+                    "HÃY LUÔN dùng công cụ này cho MỌI câu hỏi cần tra cứu thông tin, bao gồm: "
+                    "(1) sản phẩm cụ thể, mô tả, công dụng, giá cả; VÀ "
+                    "(2) thông tin chung về cửa hàng như: địa chỉ, số điện thoại/hotline, email, cách liên hệ, "
+                    "giờ làm việc, giới thiệu cửa hàng, chính sách giao hàng, phí giao hàng, chính sách đổi trả/hoàn tiền, "
+                    "phương thức thanh toán, mã giảm giá, bảo mật thông tin, dịch vụ. "
+                    "Nếu không chắc chắn, hãy ưu tiên gọi công cụ này trước khi trả lời."
+                ),
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -409,7 +417,7 @@ async def async_generate_rag_response(query: str, history: list = None) -> str:
                             lines.append(f"{i}. {p['name']} (Danh mục: {p['category']}) - Giá: {price_str} / {p['unit']}")
                         tool_output = "Danh sách tất cả sản phẩm:\n" + "\n".join(lines)
                         
-                elif function_name == "search_products_by_similarity":
+                elif function_name == "search_knowledge_base":
                     search_query = function_args.get("search_query", query)
                     contexts = await async_search_similar_chunks(search_query, limit=3)
                     if not contexts:
