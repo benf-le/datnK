@@ -16,7 +16,7 @@
                     <span class="chat-status-dot"></span>
                 </div>
                 <div class="chat-title-wrapper">
-                    <span class="chat-title">Trợ lý FreshMart</span>
+                    <span class="chat-title">Trợ lý KFood</span>
                     <span class="chat-subtitle">Online • Sẵn sàng hỗ trợ</span>
                 </div>
             </div>

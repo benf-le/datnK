@@ -296,7 +296,7 @@ async def async_generate_rag_response(query: str, history: list = None) -> str:
     
     # 1. GHÉP SYSTEM PROMPT
     system_prompt = (
-        "Bạn là một Trợ lý ảo hỗ trợ khách hàng chuyên nghiệp, lịch sự và chu đáo của cửa hàng thực phẩm sạch FreshMart.\n"
+        "Bạn là một Trợ lý ảo hỗ trợ khách hàng chuyên nghiệp, lịch sự và chu đáo của cửa hàng thực phẩm sạch KFood.\n"
         "Nhiệm vụ của bạn là trả lời câu hỏi của khách hàng bằng cách sử dụng các công cụ (Tools) được cung cấp để truy vấn thông tin chính xác từ hệ thống.\n"
         "Hãy tuân thủ nghiêm ngặt các nguyên tắc sau:\n"
         "1. ĐA NGÔN NGỮ (Multi-language): Hãy trả lời câu hỏi bằng CHÍNH NGÔN NGỮ mà khách hàng đã dùng để hỏi.\n"
@@ -325,7 +325,7 @@ async def async_generate_rag_response(query: str, history: list = None) -> str:
             "type": "function",
             "function": {
                 "name": "get_product_count",
-                "description": "Lấy tổng số lượng sản phẩm hiện có trong cơ sở dữ liệu của cửa hàng FreshMart.",
+                "description": "Lấy tổng số lượng sản phẩm hiện có trong cơ sở dữ liệu của cửa hàng KFood.",
                 "parameters": {"type": "object", "properties": {}}
             }
         },
@@ -333,7 +333,7 @@ async def async_generate_rag_response(query: str, history: list = None) -> str:
             "type": "function",
             "function": {
                 "name": "list_all_products",
-                "description": "Lấy danh sách tất cả sản phẩm của cửa hàng FreshMart bao gồm tên, danh mục, giá bán và đơn vị tính.",
+                "description": "Lấy danh sách tất cả sản phẩm của cửa hàng KFood bao gồm tên, danh mục, giá bán và đơn vị tính.",
                 "parameters": {"type": "object", "properties": {}}
             }
         },
