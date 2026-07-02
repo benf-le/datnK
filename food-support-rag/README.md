@@ -268,8 +268,40 @@ curl -X POST http://localhost:8000/api/chat \
 
 ---
 
+## 🗂️ Nạp nội dung trang web tĩnh vào Vector DB (Static Content Ingestion)
+
+Ngoài dữ liệu sản phẩm, chatbot còn cần trả lời các câu hỏi về **thông tin cửa hàng** như: giới thiệu, liên hệ, chính sách giao hàng, đổi trả, thanh toán, bảo mật... Những thông tin này nằm rải rác trong các trang tĩnh của website Laravel (`about`, `contact`, `faq`, `service`, `footer`...).
+
+Script **`ingest_static_content.py`** tổng hợp các thông tin đó thành **10 tài liệu tri thức** theo từng chủ đề (mỗi chủ đề nạp riêng để giữ ngữ cảnh mạch lạc, giúp Semantic Search chính xác hơn) rồi nạp thẳng vào Qdrant.
+
+Script gọi **trực tiếp** hàm `async_ingest_document` trong `rag_service.py`, nên **không cần** FastAPI server phải đang chạy — chỉ cần file `.env` đã cấu hình `OPENAI_API_KEY` và `QDRANT_URL` / `QDRANT_API_KEY`.
+
+**Cách chạy** (từ thư mục `food-support-rag`):
+```bash
+# Windows (PowerShell / Git Bash) — cần PYTHONIOENCODING để không lỗi tiếng Việt trên console cp1252
+PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe ingest_static_content.py
+
+# macOS / Linux
+PYTHONIOENCODING=utf-8 ./venv/bin/python ingest_static_content.py
+```
+
+**Kết quả mong đợi:**
+```text
+--- Bắt đầu nạp 10 tài liệu tĩnh vào Qdrant ---
+
+  [OK] 'Giới thiệu về KFood' -> 2 chunks
+  [OK] 'Thông tin liên hệ KFood' -> 1 chunks
+  ...
+--- Hoàn tất: 10/10 tài liệu nạp thành công ---
+```
+
+> 💡 Khi nội dung trang tĩnh thay đổi, chỉ cần cập nhật danh sách `KNOWLEDGE_DOCS` trong script rồi chạy lại. Các tài liệu này được gắn nhãn `doc_type = "general_knowledge"` trong Qdrant để phân biệt với dữ liệu sản phẩm.
+
+---
+
 ## 📁 Cấu trúc File & Nhiệm vụ cụ thể
 *   **`main.py`**: Trái tim của ứng dụng FastAPI. Định nghĩa các Router API (`/api/chat`, `/ingest`, `/ingest/product`, `/health`), xử lý request và response đồng bộ.
 *   **`rag_service.py`**: Chứa toàn bộ "phép thuật" về AI & Vector Database. Thực hiện chia nhỏ text (Chunking), gọi API tạo Embeddings (3072 chiều), truy vấn Qdrant Cloud, và tạo System Prompt đa ngôn ngữ để gửi cho GPT-4o-mini.
+*   **`ingest_static_content.py`**: Script tiện ích nạp nội dung các trang web tĩnh (giới thiệu, liên hệ, FAQ, chính sách giao hàng/đổi trả, thanh toán, dịch vụ...) thành các tài liệu tri thức và đưa vào Qdrant. Gọi trực tiếp `async_ingest_document`, không cần server chạy.
 *   **`requirements.txt`**: Danh sách các thư viện Python cần cài đặt (fastapi, uvicorn, httpx, qdrant-client, openai, python-dotenv).
 *   **`.env` & `.env.example`**: File cấu hình môi trường chứa API Keys và URLs kết nối.
