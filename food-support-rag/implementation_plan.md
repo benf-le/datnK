@@ -1,6 +1,6 @@
-# Kế hoạch triển khai: RAG Base Project tích hợp Chatwoot
+# Kế hoạch triển khai: Hệ Thống RAG AI Hỗ Trợ Khách Hàng
 
-Dự án này nhằm mục đích xây dựng một hệ thống Retrieval-Augmented Generation (RAG) đơn giản, trực quan và dễ hiểu nhất để người học có thể nắm vững luồng hoạt động end-to-end từ lúc nhận webhook Chatwoot, embedding câu hỏi, tìm kiếm vector database Qdrant, gửi context cho OpenAI LLM và phản hồi lại Chatwoot.
+Dự án này nhằm mục đích xây dựng một hệ thống Retrieval-Augmented Generation (RAG) đơn giản, trực quan và dễ hiểu nhất để người học có thể nắm vững luồng hoạt động end-to-end từ lúc nhận câu hỏi, embedding câu hỏi, tìm kiếm vector database Qdrant, gửi context cho OpenAI LLM và trả lời bằng câu tư vấn được AI sinh ra.
 
 ---
 
@@ -9,14 +9,13 @@ Dự án này nhằm mục đích xây dựng một hệ thống Retrieval-Augme
 Để giữ cho dự án đơn giản, trực quan và không bị "over-engineering", chúng ta sẽ tổ chức code theo cấu trúc phẳng nhưng phân chia nhiệm vụ rõ ràng:
 
 ```text
-d:\rag\
-├── docker-compose.yml     # Khởi chạy Qdrant Vector Database
+food-support-rag/
+├── docker-compose.yml     # Tùy chọn: Khởi chạy Qdrant Vector Database cục bộ
 ├── requirements.txt       # Các thư viện Python cần thiết
-├── .env.example           # File cấu hình mẫu (OpenAI API Key, Qdrant URL, Chatwoot Credentials)
-├── README.md              # Tài liệu hướng dẫn cài đặt, chạy thử và giải thích chi tiết lý thuyết
-├── main.py                # FastAPI Application & Routing (Các endpoint POST /ingest, POST /chatwoot/webhook, GET /health)
-├── rag_service.py         # Logic xử lý RAG (Chunking, Embedding, Vector Search, LLM Prompt)
-└── chatwoot_service.py    # Logic tương tác với Chatwoot API (Gửi tin nhắn phản hồi)
+├── .env.example           # File cấu hình mẫu (OpenAI API Key, Qdrant URL)
+├── README.md              # Tài liệu hướng dẫn cài đặt, chạy thử và giải thích lý thuyết
+├── main.py                # FastAPI Application & Routing (Các endpoint POST /api/chat, POST /ingest, GET /health)
+└── rag_service.py         # Logic xử lý RAG (Chunking, Embedding, Vector Search, LLM Prompt)
 ```
 
 ---
@@ -26,29 +25,26 @@ d:\rag\
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Khách hàng
-    participant CW as Chatwoot (Widget)
+    actor Client as Ứng dụng Client
     participant API as FastAPI Server
-    participant DB as Qdrant DB
-    participant LLM as OpenAI (Embeddings & Chat)
+    participant DB as Qdrant Cloud
+    participant LLM as OpenAI API
 
-    User->>CW: Nhắn tin (ví dụ: "Giờ mở cửa là mấy giờ?")
-    Note over CW, API: Chatwoot Webhook Triggered
-    CW->>API: POST /chatwoot/webhook (Payload tin nhắn)
+    Client->>API: POST /api/chat (Câu hỏi: "Tôi muốn ăn gì tốt cho sức khỏe?")
     
     rect rgb(240, 248, 255)
-        note right of API: Bắt đầu RAG Flow
-        API->>LLM: Tạo Embedding cho câu hỏi của User (text-embedding-3-small)
-        LLM-->>API: Trả về Vector đại diện
-        API->>DB: Tìm kiếm Vector tương đồng nhất (Similarity Search)
-        DB-->>API: Trả về các Chunk tài liệu liên quan kèm độ tương đồng
-        API->>API: Ráp Context từ DB + Câu hỏi gốc thành Prompt hoàn chỉnh
-        API->>LLM: Gọi GPT-4o-mini với Prompt kèm Context
-        LLM-->>API: Trả về Câu trả lời cuối cùng
+        note right of API: RAG Processing Flow
+        API->>LLM: Tạo Embedding cho câu hỏi (text-embedding-3-large)
+        LLM-->>API: Trả về Vector đại diện (3072 chiều)
+        API->>DB: Tìm kiếm Vector tương đồng nhất (Cosine Similarity)
+        DB-->>API: Trả về các Chunk sản phẩm liên quan + metadata
+        API->>API: Ráp Context: Thông tin sản phẩm + Câu hỏi gốc
+        API->>LLM: Gọi GPT-4o-mini với Prompt đầy đủ
+        LLM-->>API: Trả về Câu trả lời được tư vấn cá nhân hóa
     end
     
-    API->>CW: POST /api/v1/accounts/.../conversations/.../messages (Gửi câu trả lời)
-    CW-->>User: Hiển thị câu trả lời trên Chat Widget
+    API-->>Client: Response JSON (Câu trả lời + Metadata)
+    Client->>Client: Hiển thị câu trả lời cho khách hàng
 ```
 
 ---
@@ -56,61 +52,73 @@ sequenceDiagram
 ## Các thành phần chính và giải thích
 
 ### 1. File cấu hình & Môi trường chạy
-*   **[NEW] `docker-compose.yml`**: Khởi động Qdrant trên port `6333` và dashboard giao diện quản trị trên port `6333/dashboard`.
-*   **[NEW] `requirements.txt`**: Khai báo các thư viện:
+*   **`docker-compose.yml`**: Tùy chọn: Khởi động Qdrant cục bộ trên port `6333` hoặc sử dụng Qdrant Cloud.
+*   **`requirements.txt`**: Khai báo các thư viện:
     *   `fastapi` & `uvicorn` (xây dựng web API)
-    *   `qdrant-client` (giao tiếp với Qdrant DB)
+    *   `qdrant-client` (giao tiếp với Qdrant Cloud hoặc Local)
     *   `openai` (giao tiếp với OpenAI API)
     *   `python-dotenv` (quản lý biến môi trường)
-    *   `httpx` (gửi request HTTP bất đồng bộ đến Chatwoot API)
-*   **[NEW] `.env.example`**: Các cấu hình như `OPENAI_API_KEY`, `QDRANT_URL`, `CHATWOOT_API_KEY`, `CHATWOOT_URL`.
+    *   `httpx` (gửi request HTTP bất đồng bộ)
+*   **`.env.example`**: Các cấu hình như `OPENAI_API_KEY`, `QDRANT_URL`, `QDRANT_API_KEY`, `PORT`.
 
 ### 2. Các file mã nguồn chính
-*   **[NEW] main.py**:
+*   **main.py**:
     *   Khởi tạo FastAPI app.
-    *   Endpoint `GET /health`: Kiểm tra trạng thái hệ thống.
-    *   Endpoint `POST /ingest`: Nhận một văn bản dài từ admin, thực hiện chunking, embedding và lưu trữ vào Qdrant.
-    *   Endpoint `POST /chatwoot/webhook`: Nhận sự kiện từ Chatwoot khi có tin nhắn mới từ user. Lọc đúng loại tin nhắn (chỉ xử lý tin nhắn từ khách hàng - `incoming`), kích hoạt luồng RAG và gửi phản hồi lại Chatwoot.
-*   **[NEW] rag_service.py**:
-    *   *Chunking*: Chia nhỏ văn bản dài thành các đoạn nhỏ (ví dụ: kích thước 500 ký tự, overlap 50 ký tự) để đảm bảo context truyền vào LLM được cô đọng và chính xác.
-    *   *Embedding*: Sử dụng `text-embedding-3-small` để chuyển hóa text sang vector 1536 chiều.
-    *   *Vector Search*: Khởi tạo collection trong Qdrant nếu chưa tồn tại, insert vector chunks và thực hiện query tìm kiếm cosine similarity.
+    *   Endpoint `GET /health`: Kiểm tra trạng thái hệ thống (OpenAI, Qdrant).
+    *   Endpoint `POST /api/chat`: Nhận câu hỏi, thực hiện RAG đồng bộ và trả về câu trả lời.
+    *   Endpoint `POST /ingest`: Nhận văn bản, thực hiện chunking, embedding và lưu vào Qdrant.
+    *   Endpoint `POST /ingest/product`: Nhận thông tin sản phẩm, nạp/cập nhật vào Qdrant.
+    *   Endpoint `POST /ingest/products/bulk`: Nạp hàng loạt nhiều sản phẩm.
+    *   Endpoint `DELETE /ingest/product/{product_id}`: Xóa vector sản phẩm.
+*   **rag_service.py**:
+    *   *Chunking*: Chia nhỏ văn bản (kích thước 500 ký tự, overlap 50 ký tự).
+    *   *Embedding*: Sử dụng `text-embedding-3-large` để chuyển văn bản sang vector 3072 chiều.
+    *   *Vector Search*: Khởi tạo collection trong Qdrant, insert chunks, tìm kiếm cosine similarity.
     *   *LLM Prompt*: Xây dựng Prompt dạng:
         ```text
-        Bạn là trợ lý ảo hỗ trợ khách hàng. Hãy trả lời câu hỏi dựa trên ngữ cảnh dưới đây.
-        Nếu không có thông tin trong ngữ cảnh, hãy nói "Tôi không có thông tin về vấn đề này".
+        Bạn là trợ lý ảo tư vấn cho khách hàng về sản phẩm thức ăn.
+        Hãy trả lời dựa trên thông tin sản phẩm dưới đây.
+        Nếu không có thông tin liên quan, nói "Tôi không có thông tin".
         
-        Ngữ cảnh:
+        Thông tin sản phẩm:
         {CONTEXT}
         
         Câu hỏi:
         {QUESTION}
         ```
-*   **[NEW] chatwoot_service.py**:
-    *   Gửi yêu cầu HTTP POST đến API của Chatwoot để tạo tin nhắn mới (phản hồi) trong conversation tương ứng.
 
 ---
 
 ## Kế hoạch xác minh (Verification Plan)
 
 ### Kiểm thử tự động & Thủ công
-1.  **Chạy docker-compose** để khởi tạo Qdrant:
-    ```bash
-    docker-compose up -d
-    ```
-2.  **Chạy FastAPI server**:
+1.  **Chạy FastAPI server**:
     ```bash
     python -m venv venv
-    .\venv\Scripts\activate   # Trên Windows
+    .\venv\Scripts\activate   # Windows
     pip install -r requirements.txt
-    uvicorn main:app --reload --port 8000
+    python main.py
     ```
-3.  **Kiểm tra endpoint `/ingest`** bằng cách gửi tài liệu mẫu (ví dụ: Chính sách giao hàng, Giờ hoạt động).
-4.  **Kiểm tra luồng `/chatwoot/webhook`** bằng cách sử dụng công cụ Postman/cURL giả lập payload webhook của Chatwoot để xem hệ thống trả lời chính xác dựa trên tài liệu đã ingest.
+2.  **Kiểm tra endpoint `/health`** để xác nhận kết nối:
+    ```bash
+    curl http://localhost:8000/health
+    ```
+3.  **Kiểm tra endpoint `/ingest`** bằng cách nạp tài liệu (ví dụ: Chính sách, giờ hoạt động):
+    ```bash
+    curl -X POST http://localhost:8000/ingest \
+    -H "Content-Type: application/json" \
+    -d '{"text": "Cửa hàng mở cửa từ 8AM đến 10PM hàng ngày"}'
+    ```
+4.  **Kiểm tra luồng `/api/chat`** bằng cách gửi câu hỏi:
+    ```bash
+    curl -X POST http://localhost:8000/api/chat \
+    -H "Content-Type: application/json" \
+    -d '{"query": "Giờ mở cửa là mấy giờ?"}'
+    ```
 
 ---
 
-## Câu hỏi & Trao đổi thêm với User
+## Phát Triển Tiếp Theo
 > [!NOTE]
-> Bạn có muốn bổ sung thêm bất kỳ logic đặc biệt nào trong luồng xử lý tin nhắn Chatwoot không? (Ví dụ: Chỉ trả lời khi cuộc hội thoại ở trạng thái `open`, hoặc tự động gán nhãn, bỏ qua tin nhắn từ Bot khác, v.v.)
-> Nếu bạn đồng ý với kế hoạch đơn giản, tinh gọn và đầy tính giáo dục này, hãy nhấn **Xác nhận** để tôi bắt đầu viết mã nguồn chi tiết cùng tài liệu giải thích học thuật nhé!
+> Hệ thống RAG hiện tại cung cấp API thuần túy để ứng dụng client tích hợp.
+> Nếu cần tích hợp với các nền tảng khác (Chatwoot, Slack, v.v.), bạn có thể sử dụng các endpoint `/api/chat` và `/ingest` làm cơ sở để xây dựng adapter tương ứng.

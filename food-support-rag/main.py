@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Body, status
+from fastapi import FastAPI, HTTPException, Body, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict
 from dotenv import load_dotenv
@@ -12,7 +12,6 @@ from rag_service import (
     async_qdrant_client,
     QDRANT_COLLECTION_NAME
 )
-from chatwoot_service import send_chatwoot_reply
 
 # Load các biến môi trường
 load_dotenv()
@@ -85,19 +84,6 @@ class ChatQueryRequest(BaseModel):
 
 # --- UTILITIES ---
 
-async def process_rag_and_reply_chatwoot(account_id: int, conversation_id: int, query: str):
-    """
-    Hàm xử lý RAG bất đồng bộ chạy dưới nền (Background Task).
-    """
-    try:
-        # Bước 1: Thực hiện luồng RAG để lấy câu trả lời từ LLM bất đồng bộ
-        answer = await async_generate_rag_response(query)
-        
-        # Bước 2: Gửi câu trả lời ngược lại Chatwoot qua API
-        await send_chatwoot_reply(account_id, conversation_id, answer)
-    except Exception as e:
-        print(f"[Background Task] Đã xảy ra lỗi khi xử lý RAG & gửi phản hồi: {str(e)}")
-
 
 # --- API ENDPOINTS ---
 
@@ -109,7 +95,6 @@ async def health_check():
     health_status = {
         "status": "healthy",
         "openai_api": "configured" if os.getenv("OPENAI_API_KEY") else "missing",
-        "chatwoot_api": "configured" if os.getenv("CHATWOOT_API_KEY") else "missing",
         "qdrant": "disconnected"
     }
     
@@ -269,59 +254,6 @@ async def ingest_bulk_products(payload: list[ProductIngestRequest]):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Lỗi hệ thống khi nạp hàng loạt sản phẩm: {str(e)}"
         )
-
-
-@app.post("/chatwoot/webhook", summary="Nhận webhook sự kiện từ Chatwoot")
-async def chatwoot_webhook(background_tasks: BackgroundTasks, payload: dict = Body(...)):
-    """
-    Endpoint tiếp nhận webhook từ Chatwoot khi có tin nhắn mới.
-    """
-    event = payload.get("event")
-    message_type = payload.get("message_type")
-    is_private = payload.get("private", False)
-    content = payload.get("content")
-    
-    print(f"[Webhook] Nhận sự kiện: {event} | Kiểu tin: {message_type} | Private: {is_private}")
-    
-    if event == "message_created" and message_type == "incoming" and not is_private:
-        account_info = payload.get("account", {})
-        account_id = account_info.get("id")
-        
-        conversation_info = payload.get("conversation", {})
-        conversation_id = conversation_info.get("id")
-        
-        if not account_id:
-            account_id = payload.get("account_id")
-        if not conversation_id:
-            conversation_id = payload.get("conversation_id")
-            
-        if not account_id or not conversation_id:
-            print("[Webhook] Lỗi: Không trích xuất được account_id hoặc conversation_id.")
-            return {"status": "ignored", "reason": "Missing identifiers"}
-            
-        if not content or not content.strip():
-            print("[Webhook] Bỏ qua: Tin nhắn không chứa văn bản.")
-            return {"status": "ignored", "reason": "Empty message content"}
-            
-        print(f"[Webhook] Nhận tin nhắn từ Conversation #{conversation_id}. Đang lên lịch xử lý ngầm...")
-        background_tasks.add_task(
-            process_rag_and_reply_chatwoot,
-            account_id=account_id,
-            conversation_id=conversation_id,
-            query=content.strip()
-        )
-        
-        return {"status": "processing", "message": "RAG task dispatched successfully"}
-        
-    else:
-        reason = "Event or message type not targeted"
-        if message_type == "outgoing":
-            reason = "Ignored outgoing message to prevent infinite reply loop"
-        elif is_private:
-            reason = "Ignored private note"
-            
-        print(f"[Webhook] Bỏ qua sự kiện. Lý do: {reason}")
-        return {"status": "ignored", "reason": reason}
 
 
 # Khởi chạy uvicorn
