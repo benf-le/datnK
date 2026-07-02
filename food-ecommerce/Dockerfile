@@ -30,8 +30,8 @@ COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copy Node.js from the official image (avoids external PPA updates)
-COPY --from=node:18-slim /usr/local/bin/node /usr/local/bin/node
-COPY --from=node:18-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node:22-slim /usr/local/bin/node /usr/local/bin/node
+COPY --from=node:22-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
@@ -40,6 +40,12 @@ WORKDIR /var/www/html
 
 # Copy project files
 COPY . .
+
+# Install PHP dependencies with Composer
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# Install Node dependencies and build assets
+RUN npm ci && npm run build
 
 # Create directory structure for Laravel storage and cache
 RUN mkdir -p storage/framework/cache/data \

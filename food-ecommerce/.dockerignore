@@ -8,5 +8,3 @@
 .git
 .github
 Dockerfile
-docker-entrypoint.sh
-000-default.conf

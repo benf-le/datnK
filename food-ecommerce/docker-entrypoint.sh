@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-# Run composer install if vendor doesn't exist
-if [ ! -d "vendor" ]; then
+# Run composer install if vendor/autoload.php doesn't exist
+if [ ! -f "vendor/autoload.php" ]; then
     echo "Running composer install..."
     composer install --no-interaction --optimize-autoloader
 fi
