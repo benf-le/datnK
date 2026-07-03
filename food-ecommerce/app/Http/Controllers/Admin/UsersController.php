@@ -12,11 +12,15 @@ class UsersController extends Controller
     {
         if ($request->ajax()) {
             $page = $request->get('page', 1);
-            $users = User::with('role')->paginate(9, ['*'], 'page', $page);
+            $users = User::with('role')->forPage($page, 9)->get();
+            $totalUsers = User::count();
+            $totalPages = ceil($totalUsers / 9);
+            $hasMore = $page < $totalPages;
+
             return response()->json([
-                'users' => $users->items(),
-                'has_more' => $users->hasMorePages(),
-                'next_page' => $users->currentPage() + 1,
+                'users' => $users->toArray(),
+                'has_more' => $hasMore,
+                'next_page' => $page + 1,
             ]);
         }
 
