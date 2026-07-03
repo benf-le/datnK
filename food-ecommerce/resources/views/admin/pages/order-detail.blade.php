@@ -44,7 +44,7 @@
                                 <!-- title row -->
                                 <div class="row">
                                     <div class="invoice-header">
-                                        <p class="text-muted"><small>Ngày tạo: {{ $order->created_at }}</small></p>
+                                        <p class="text-muted">Ngày tạo: {{ $order->created_at }}</p>
                                     </div>
                                 </div>
                                 <!-- info row -->
