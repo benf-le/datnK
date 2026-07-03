@@ -17,14 +17,14 @@ class AdminAuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required:min:6'
+            'password' => 'required|min:6'
         ]);
 
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::guard('admin')->user();
 
             //Check permission
-            if (in_array($user->role->name, ['admin', 'staff'])) {
+            if (in_array(strtolower($user->role->name), ['admin', 'staff'])) {
                 $request->session()->regenerate();
                 toastr()->success('Đăng nhập admin thành công!');
                 return redirect()->route('admin.dashboard');

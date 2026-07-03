@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function () {
 
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    })->middleware(['auth.custom']);
+
     Route::middleware(['check.auth.admin'])->group(function () {
         Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
         Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.post');
