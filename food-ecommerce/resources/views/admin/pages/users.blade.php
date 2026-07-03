@@ -18,7 +18,7 @@
             <div class="x_panel">
                 <div class="x_content">
 
-                    <div class="row">
+                    <div class="row users-grid">
                         @foreach ($users as $user)
                             <div class="col-md-4 col-sm-4 profile_details">
                                 <div class="well profile_view">

@@ -158,24 +158,33 @@
     word-break: break-word;
 }
 
-/* User card fixed height */
-.profile_details {
-    min-height: 300px !important;
+/* User cards: hàng flex để các thẻ cùng 1 dòng cao bằng nhau */
+.users-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
 }
 
-.profile_view {
-    height: 100% !important;
+.users-grid .profile_details {
+    display: flex !important;
+    margin-bottom: 20px !important;
+}
+
+/* Thẻ cố định 1 kích thước */
+.users-grid .profile_view {
+    width: 100% !important;
+    height: 320px !important;
     display: flex !important;
     flex-direction: column !important;
+    overflow: hidden !important;
 }
 
-.profile_view .col-sm-12 {
+.users-grid .profile_view > .col-sm-12 {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
 }
 
-.profile-bottom {
+.users-grid .profile-bottom {
     margin-top: auto !important;
 }
 
