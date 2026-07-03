@@ -46,8 +46,8 @@
                                     <div class="  invoice-header">
                                         <h1>
                                             <i class="fa fa-globe"></i>
-                                            <small>Ngày tạo: {{ $order->created_at }}</small>
                                         </h1>
+                                        <small style="font-size: 0.85rem; color: #666;">Ngày tạo: {{ $order->created_at }}</small>
                                     </div>
                                     <!-- /.col -->
                                 </div>
