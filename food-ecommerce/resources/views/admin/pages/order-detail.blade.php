@@ -43,13 +43,9 @@
                             <section class="content invoice">
                                 <!-- title row -->
                                 <div class="row">
-                                    <div class="  invoice-header">
-                                        <h1>
-                                            <i class="fa fa-globe"></i>
-                                        </h1>
-                                        <small style="font-size: 0.85rem; color: #666;">Ngày tạo: {{ $order->created_at }}</small>
+                                    <div class="invoice-header">
+                                        <p class="text-muted"><small>Ngày tạo: {{ $order->created_at }}</small></p>
                                     </div>
-                                    <!-- /.col -->
                                 </div>
                                 <!-- info row -->
                                 <div class="row invoice-info">
