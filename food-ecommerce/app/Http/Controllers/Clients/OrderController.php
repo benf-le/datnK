@@ -10,7 +10,7 @@ class OrderController extends Controller
 {
     public function showOrder($id)
     {
-        $order = Order::with(['orderItems.product', 'user', 'shippingAddress', 'payment'])->findOrFail($id);
+        $order = Order::with(['orderItems.product', 'user', 'payment'])->findOrFail($id);
 
         $userId = auth()->id();
         return view('clients.pages.order-detail', compact('order'));

@@ -11,7 +11,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('orderItems', 'shippingAddress', 'user', 'payment')->latest()->get();
+        $orders = Order::with('orderItems', 'user', 'payment')->latest()->get();
 
         return view('admin.pages.orders', compact('orders'));
     }
@@ -38,7 +38,7 @@ class OrderController extends Controller
 
     public function showOrderDetail($id)
     {
-        $order = Order::with('orderItems.product', 'shippingAddress', 'user', 'payment')->find($id);
+        $order = Order::with('orderItems.product', 'user', 'payment')->find($id);
 
         return view('admin.pages.order-detail', compact(var_name: 'order'));
     }
@@ -46,7 +46,7 @@ class OrderController extends Controller
     public function sendMailInvoice(Request $request)
     {
         $id = $request->id;
-        $order = Order::with('orderItems.product', 'shippingAddress', 'user', 'payment')->find($id);
+        $order = Order::with('orderItems.product', 'user', 'payment')->find($id);
 
         try {
 

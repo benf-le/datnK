@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $users = User::where('role_id', 3)->latest()->get();
         $categories = Category::withCount('products')->get();
         $products = Product::where('stock', '>', 0)->get();
-        $orders = Order::with('shippingAddress')->latest()->get();
+        $orders = Order::latest()->get();
 
         //Get list top3 best seller proucts
 
