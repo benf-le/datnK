@@ -10,8 +10,17 @@ class UsersController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('role')->paginate(9);
+        if ($request->ajax()) {
+            $page = $request->get('page', 1);
+            $users = User::with('role')->paginate(9, ['*'], 'page', $page);
+            return response()->json([
+                'users' => $users->items(),
+                'has_more' => $users->hasMorePages(),
+                'next_page' => $users->currentPage() + 1,
+            ]);
+        }
 
+        $users = User::with('role')->paginate(9);
         return view('admin.pages.users', compact('users'));
     }
 
