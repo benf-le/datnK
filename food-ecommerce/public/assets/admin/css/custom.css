@@ -158,6 +158,27 @@
     word-break: break-word;
 }
 
+/* User card fixed height */
+.profile_details {
+    min-height: 300px !important;
+}
+
+.profile_view {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.profile_view .col-sm-12 {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.profile-bottom {
+    margin-top: auto !important;
+}
+
 /* DataTables Pagination styling */
 .dataTables_wrapper {
     display: flex !important;
