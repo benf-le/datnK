@@ -14,8 +14,8 @@ class RolePermissionTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminRole = Role::where('name', 'admin')->first();
-        $staffRole = Role::where('name', 'staff')->first();
+        $adminRole = Role::whereRaw('LOWER(name) = ?', ['admin'])->first();
+        $staffRole = Role::whereRaw('LOWER(name) = ?', ['staff'])->first();
 
         $permissions = Permission::all();
 
