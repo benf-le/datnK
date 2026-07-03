@@ -77,7 +77,7 @@
                     <!-- Pagination -->
                     <div class="row" style="padding: 20px 0;">
                         <div class="col-md-12 text-center">
-                            {{ $users->links() }}
+                            {{ $users->links('pagination.custom') }}
                         </div>
                     </div>
                 </div>
