@@ -157,3 +157,25 @@
     -webkit-box-orient: vertical;
     word-break: break-word;
 }
+
+/* Pagination styling */
+.pagination {
+    gap: 5px;
+    justify-content: center;
+}
+
+.pagination .page-link {
+    padding: 5px 10px !important;
+    font-size: 12px !important;
+    min-width: auto !important;
+    border: 1px solid #ddd;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #1c3d48;
+    border-color: #1c3d48;
+}
+
+.pagination .page-link:hover {
+    color: #1c3d48;
+}
