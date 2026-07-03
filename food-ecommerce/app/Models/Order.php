@@ -44,13 +44,14 @@ class Order extends Model
 
     public function getShippingAddressAttribute()
     {
-        if (!$this->shipping_address && !$this->shipping_full_name) {
+        $rawAddress = $this->attributes['shipping_address'] ?? null;
+        if (!$rawAddress && !$this->shipping_full_name) {
             return null;
         }
         return (object) [
             'full_name' => $this->shipping_full_name,
             'phone' => $this->shipping_phone,
-            'address' => $this->shipping_address,
+            'address' => $rawAddress,
             'ward' => $this->shipping_ward,
             'district' => $this->shipping_district,
             'city' => $this->shipping_city,

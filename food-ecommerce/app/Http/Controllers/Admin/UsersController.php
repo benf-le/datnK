@@ -33,7 +33,8 @@ class UsersController extends Controller
             ]);
         }
 
-        $user->role_id = 2; // role = 2 is staff
+        $staffRole = \App\Models\Role::whereRaw('LOWER(name) = ?', ['staff'])->first();
+        $user->role_id = $staffRole ? $staffRole->id : 4;
         $user->save();
 
         return response()->json([
