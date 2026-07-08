@@ -52,7 +52,7 @@
   @endif
 
   <!-- Custom CSS -->
-  <link href="{{ asset('assets/admin/css/custom.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/admin/css/custom.css') }}?v={{ time() }}" rel="stylesheet">
 </head>
 
 <body class="nav-md">

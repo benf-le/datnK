@@ -190,9 +190,6 @@
 
 /* DataTables Pagination styling */
 .dataTables_wrapper {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
     margin-top: 15px;
     padding: 10px;
     font-size: 13px;
