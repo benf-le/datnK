@@ -3,14 +3,10 @@
 namespace App\Http\Controllers\Clients;
 
 use App\Http\Controllers\Controller;
-use App\Mail\ActivationMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use function Laravel\Prompts\error;
 
 class AuthController extends Controller
 {
@@ -34,32 +30,15 @@ class AuthController extends Controller
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
         ]);
 
-        //Check if email exists
-        $existingUser = User::where('email', $request->email)->first();
-
-        if ($existingUser) {
-            if ($existingUser->isPending()) {
-                toastr() . error('Email đã được đăng kí và đang đợi kích hoạt');
-                return redirect()->route('register');
-            }
-            return redirect()->route('register');
-        }
-
-        //Create token active
-        $token = Str::random(64);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'status' => 'pending',
+            'status' => 'active',
             'role_id' => 3,
-            'activation_token' => $token,
         ]);
 
-        Mail::to($user->email)->send(new ActivationMail($token, $user));
-
-        toastr()->success('Đăng kí tài khoản thành công. Vui lòng kiểm tra email để kích hoạt tài khoản');
+        toastr()->success('Đăng kí tài khoản thành công. Vui lòng đăng nhập.');
         return redirect()->route('login');
     }
 
