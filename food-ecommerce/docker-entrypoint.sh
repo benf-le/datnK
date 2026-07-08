@@ -19,6 +19,10 @@ php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
+# Ensure the public/storage symlink exists so uploaded images are served
+# (--force recreates it if missing or broken, e.g. after a fresh volume mount)
+php artisan storage:link --force
+
 # Run database migrations only in the web server container
 if [ "$1" = "apache2-foreground" ]; then
     echo "Running migrations..."
