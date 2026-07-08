@@ -162,6 +162,11 @@
                                                                     name="address" required>
                                                             </div>
                                                             <div class="mb-3">
+                                                                <label for="district" class="form-label">Quận/Huyện</label>
+                                                                <input type="text" class="form-control" id="district"
+                                                                    name="district" required>
+                                                            </div>
+                                                            <div class="mb-3">
                                                                 <label for="city" class="form-label">Thành phố</label>
                                                                 <input type="text" class="form-control" id="city"
                                                                     name="city" required>
