@@ -51,6 +51,16 @@
                                                     <a href="javascript.void(0)">{{ $product->category->name }}</a>
                                                 </span>
                                             </li>
+                                            <li>
+                                                <strong>Tình trạng:</strong>
+                                                <span>
+                                                    @if($product->stock > 0)
+                                                        <span class="text-success">Còn hàng ({{ $product->stock }})</span>
+                                                    @else
+                                                        <span class="text-danger">Hết hàng</span>
+                                                    @endif
+                                                </span>
+                                            </li>
                                         </ul>
                                     </div>
                                     <div class="ltn__product-details-menu-2">
