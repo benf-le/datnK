@@ -709,7 +709,15 @@ $(document).ready(function () {
                     loadReviews(productId);
                 },
                 error: function (xhr) {
-                    alert(xhr.responseJSON.error);
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        toastr.error(xhr.responseJSON.message);
+                    } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        $.each(xhr.responseJSON.errors, function (key, value) {
+                            toastr.error(value[0]);
+                        });
+                    } else {
+                        toastr.error("Có lỗi xảy ra, vui lòng thử lại.");
+                    }
                 },
             });
         });

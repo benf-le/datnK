@@ -6,10 +6,17 @@
                     <img src="{{ $review->user->avatar_url }}" alt="{{ $review->user->name }}">
                 </div>
                 <div class="ltn__commenter-comment">
-                    <h6>{{ $review->user->name }}</h6>
+                    <h6>
+                        {{ $review->user->name }}
+                        @if ($review->hasPurchased())
+                            <span class="verified-purchase-badge" style="font-size: 11px; font-weight: 500; border: 1px solid #28a745; padding: 2px 8px; border-radius: 4px; background-color: #e8f5e9; color: #28a745; display: inline-flex; align-items: center; gap: 4px; margin-left: 8px;">
+                                <i class="fas fa-check-circle" style="color: #28a745; font-size: 10px;"></i> Đã mua hàng
+                            </span>
+                        @endif
+                    </h6>
                     <div class="product-ratting">
                         <ul>
-                            @for ($i = 0; $i < 5; $i++)
+                            @for ($i = 1; $i <= 5; $i++)
                                 <li>
                                     <a href="javascript:void(0)">
                                         <i class="{{ $i <= $review->rating ? 'fas fa-star' : 'far fa-star' }}"></i>
