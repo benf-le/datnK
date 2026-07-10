@@ -23,7 +23,7 @@ class CheckoutController extends Controller
         $defaultAddress = $addresses->where('is_default', 1)->first();
         if (is_null($addresses) || is_null($defaultAddress)) {
             toastr()->error('Vui lòng thêm địa chỉ giao hàng.');
-            return redirect()->route('account');
+            return redirect()->to(route('account') . '#liton_tab_address');
         }
 
         $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
@@ -158,12 +158,12 @@ class CheckoutController extends Controller
                 } catch (\Exception $e) {
                     Log::error('PayOS error on initial redirect: ' . $e->getMessage());
                     toastr()->warning('Đơn hàng đã được đặt. Không thể mở trang thanh toán PayOS lúc này, quý khách vui lòng thanh toán lại trong mục chi tiết đơn hàng.');
-                    return redirect()->route('account');
+                    return redirect()->to(route('account') . '#liton_tab_orders');
                 }
             }
 
             toastr()->success('Đặt hàng thành công.');
-            return redirect()->route('account');
+            return redirect()->to(route('account') . '#liton_tab_orders');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Checkout error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -222,7 +222,7 @@ class CheckoutController extends Controller
             }
         }
 
-        return redirect()->route('account');
+        return redirect()->to(route('account') . '#liton_tab_orders');
     }
 
     public function payosCancel(Request $request)
@@ -234,7 +234,7 @@ class CheckoutController extends Controller
         } else {
             toastr()->error('Không tìm thấy đơn hàng.');
         }
-        return redirect()->route('account');
+        return redirect()->to(route('account') . '#liton_tab_orders');
     }
 
     public function payosPayAgain($id)
@@ -244,13 +244,13 @@ class CheckoutController extends Controller
 
         if ($order->status !== 'pending') {
             toastr()->error('Đơn hàng này không ở trạng thái chờ thanh toán.');
-            return redirect()->route('account');
+            return redirect()->to(route('account') . '#liton_tab_orders');
         }
 
         $payment = $order->payment;
         if (!$payment || $payment->status === 'completed') {
             toastr()->error('Đơn hàng này đã được thanh toán.');
-            return redirect()->route('account');
+            return redirect()->to(route('account') . '#liton_tab_orders');
         }
 
         $payOS = new \PayOS\PayOS(
@@ -299,7 +299,7 @@ class CheckoutController extends Controller
         } catch (\Exception $e) {
             Log::error('PayOS pay again error: ' . $e->getMessage());
             toastr()->error('Không thể kết nối tới cổng thanh toán PayOS. Vui lòng thử lại sau.');
-            return redirect()->route('account');
+            return redirect()->to(route('account') . '#liton_tab_orders');
         }
     }
 

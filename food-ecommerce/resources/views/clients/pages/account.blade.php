@@ -276,3 +276,34 @@
     <!-- WISHLIST AREA START -->
 
 @endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        function activateTabFromHash() {
+            var hash = window.location.hash;
+            if (hash) {
+                var tabTriggerEl = document.querySelector('.nav a[href="' + hash + '"]');
+                if (tabTriggerEl) {
+                    // Try Bootstrap 5 Tab show
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                        var tab = new bootstrap.Tab(tabTriggerEl);
+                        tab.show();
+                    } else {
+                        // Fallback: trigger a click event
+                        tabTriggerEl.click();
+                    }
+                }
+            }
+        }
+
+        // Run on load
+        activateTabFromHash();
+
+        // Run on hash change
+        $(window).on('hashchange', function() {
+            activateTabFromHash();
+        });
+    });
+</script>
+@endsection
