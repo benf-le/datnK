@@ -36,13 +36,14 @@ class HomeController extends Controller
             }
         }
 
-        $bestSellingProducts = Product::select('products.*')
-        ->join('order_items', 'products.id', '=', 'order_items.product_id')
-        ->selectRaw('SUM(order_items.quantity) as total_sold')
-        ->groupBy('products.id', 'products.name', 'products.slug', 'products.category_id', 'products.description', 'products.price', 'products.stock', 'products.status', 'products.unit', 'products.created_at', 'products.updated_at')
-        ->orderByDesc('total_sold')
-        ->limit(10)
-        ->get();
+        $bestSellingProducts = Product::with(['firstImage', 'reviews'])
+            ->select('products.*')
+            ->join('order_items', 'products.id', '=', 'order_items.product_id')
+            ->selectRaw('SUM(order_items.quantity) as total_sold')
+            ->groupBy('products.id', 'products.name', 'products.slug', 'products.category_id', 'products.description', 'products.price', 'products.stock', 'products.status', 'products.unit', 'products.created_at', 'products.updated_at')
+            ->orderByDesc('total_sold')
+            ->limit(10)
+            ->get();
 
         return view('clients.pages.home', compact('categories', 'bestSellingProducts'));
     }

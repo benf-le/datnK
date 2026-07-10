@@ -279,12 +279,12 @@
                     </div>
                 </div>
             </div>
-            <div class="row ltn__tab-product-slider-one-active--- slick-arrow-1">
+            <div class="row ltn__tab-product-slider-one-active slick-arrow-1">
                 @foreach ($bestSellingProducts as $product)
-                    <div class="col-lg-3 col-md-4 col-sm-6 col-6">
+                    <div class="col-lg-12">
                         <div class="ltn__product-item ltn__product-item-3 text-center">
                             <div class="product-img">
-                                <a href="#"><img src="{{ $product->image_url }}" alt="{{ $product->name }}"></a>
+                                <a href="{{ route('product.detail', $product->slug) }}"><img src="{{ $product->image_url }}" alt="{{ $product->name }}"></a>
                                 <div class="product-hover-action">
                                     <ul>
                                         <li>
@@ -314,13 +314,19 @@
                                 <h2 class="product-title"><a
                                         href="{{ route('product.detail', $product->slug) }}">{{ $product->name }}</a></h2>
                                 <div class="product-price">
-                                    <span>{{ number_format($product->price, 0, ',', '.') }} VND</span>
+                                    <span>{{ number_format($product->price, 0, ',', '.') }} ₫</span>
+                                </div>
+                                <div class="product-sold" style="font-size: 13px; color: #777; margin-top: 5px;">
+                                    <span>Đã bán: <strong>{{ $product->total_sold ?? 0 }}</strong></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
+            @foreach ($bestSellingProducts as $product)
+                @include('clients.components.includes.include-modals')
+            @endforeach
         </div>
     </div>
     <!-- PRODUCT AREA END -->

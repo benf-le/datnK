@@ -101,13 +101,7 @@
                     <div class="ltn__drop-menu user-menu">
                         <ul>
                             <li>
-                                @if (Auth::check())
-                                    <img src="{{ asset('storage/' . ($userClient->avatar ?? 'uploads/users/defult-avatar.png')) }}"
-                                        alt="Avatar"
-                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
-                                @else
-                                    <a href="#"><i class="icon-user"></i></a>
-                                @endif
+                                <a href="#"><i class="icon-user"></i></a>
                                 <ul>
                                     @if (Auth::check())
                                         <li><a href="{{ route('account') }}">Tài khoản</a></li>
