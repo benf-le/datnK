@@ -58,8 +58,6 @@
                             <ul>
                                 <li><a href="{{ route('about') }}">Về chúng tôi</a></li>
                                 <li><a href="{{ route('products.index') }}">Sản phẩm</a></li>
-                                <li><a href="{{ route('faq') }}">FAQ</a></li>
-                                <li><a href="{{ route('contact.index') }}">Liên hệ</a></li>
                             </ul>
                         </div>
                     </div>
