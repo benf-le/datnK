@@ -66,8 +66,8 @@
     }
 
     .premium-title {
-        font-family: var(--ltn__heading-font);
-        font-weight: 800;
+        font-family: var(--ltn__body-font);
+        font-weight: 600;
         font-size: 2.5rem;
         color: #1a1a1a;
         margin-bottom: 15px;
@@ -319,7 +319,7 @@
                         <div class="glass-card d-flex flex-column justify-content-center text-center" style="background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));">
                             <div class="mb-4">
                                 <i class="fas fa-sign-in-alt" style="font-size: 3rem; color: #4caf50; margin-bottom: 20px;"></i>
-                                <h3 style="font-weight: 800; color: #1a1a1a; font-size: 1.8rem; margin-bottom: 15px;">Đã Có Tài Khoản?</h3>
+                                <h3 style="font-family: var(--ltn__body-font); font-weight: 600; color: #1a1a1a; font-size: 1.8rem; margin-bottom: 15px;">Đã Có Tài Khoản?</h3>
                                 <p style="color: #555; font-size: 1.05rem; line-height: 1.6; margin-bottom: 30px;">
                                     Đăng nhập ngay để tiếp tục mua sắm những thực phẩm tươi sạch hàng đầu và nhận được các chương trình khuyến mãi độc quyền dành riêng cho bạn.
                                 </p>
