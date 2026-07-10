@@ -574,11 +574,16 @@ $(document).ready(function () {
         } else {
             $("#order_button_cash").show();
             $("#paypal-button-container").hide();
+            if ($("#payment_payos").is(":checked")) {
+                $("#order_button_cash").text("Thanh toán ngay");
+            } else {
+                $("#order_button_cash").text("Đặt hàng");
+            }
         }
     }
     togglePayment();
 
-    $('input[name="payment_method"').on("change", togglePayment);
+    $('input[name="payment_method"]').on("change", togglePayment);
 
     var totalPriceText = $(".totalPrice_Checkout").text().trim();
     var totalPriceNumber = parseFloat(

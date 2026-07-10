@@ -92,6 +92,15 @@
                                         </label>
                                     </h5>
                                 </div>
+
+                                <div class="card">
+                                    <h5 class="collapsed ltn__card-title">
+                                        <input type="radio" name="payment_method" value="payos" id="payment_payos">
+                                        <label for="payment_payos">
+                                            Thanh toán qua QR Code (PayOS) <img src="https://img.vietqr.io/image/vietqr-logo-brand.png" style="height: 25px; margin-left: 5px;">
+                                        </label>
+                                    </h5>
+                                </div>
                             </div>
                             <div class="ltn__payment-note mt-30 mb-30">
                                 <p>Thông tin cá nhân của bạn sẽ được sử dụng để xử lý đơn hàng, hỗ trợ trải nghiệm mua sắm

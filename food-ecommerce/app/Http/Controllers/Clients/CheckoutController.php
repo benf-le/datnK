@@ -10,6 +10,7 @@ use App\Models\ShippingAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 
@@ -112,9 +113,55 @@ class CheckoutController extends Controller
                 'is_read' => 0
             ]);
 
+            if ($request->payment_method === 'payos') {
+                try {
+                    $payOS = new \PayOS\PayOS(
+                        config('payos.client_id'),
+                        config('payos.api_key'),
+                        config('payos.checksum_key')
+                    );
+
+                    $payosItems = [];
+                    foreach ($order->orderItems as $item) {
+                        $payosItems[] = [
+                            'name' => substr($item->product_name, 0, 50),
+                            'quantity' => intval($item->quantity),
+                            'price' => intval($item->price)
+                        ];
+                    }
+                    $payosItems[] = [
+                        'name' => 'Phí vận chuyển',
+                        'quantity' => 1,
+                        'price' => 25000
+                    ];
+
+                    $description = 'Thanh toan don #' . $order->id;
+                    if (strlen($description) > 25) {
+                        $description = substr($description, 0, 25);
+                    }
+
+                    $paymentData = [
+                        'orderCode' => intval($order->id),
+                        'amount' => intval($order->total_price),
+                        'description' => $description,
+                        'items' => $payosItems,
+                        'returnUrl' => route('checkout.payos.success'),
+                        'cancelUrl' => route('checkout.payos.cancel'),
+                    ];
+
+                    $response = $payOS->paymentRequests->create($paymentData);
+                    return redirect()->away($response->checkoutUrl);
+                } catch (\Exception $e) {
+                    Log::error('PayOS error on initial redirect: ' . $e->getMessage());
+                    toastr()->warning('Đơn hàng đã được đặt. Không thể mở trang thanh toán PayOS lúc này, quý khách vui lòng thanh toán lại trong mục chi tiết đơn hàng.');
+                    return redirect()->route('account');
+                }
+            }
+
             toastr()->success('Đặt hàng thành công.');
             return redirect()->route('account');
         } catch (\Exception $e) {
+            DB::rollBack();
             toastr()->error('Có lỗi xảy ra, vui lòng thử lại.');
             return redirect()->route('checkout');
         }
@@ -180,4 +227,171 @@ class CheckoutController extends Controller
             return redirect()->route('checkout');
         }
     }
+
+    public function payosSuccess(Request $request)
+    {
+        $orderCode = $request->query('orderCode');
+        $status = $request->query('status');
+
+        $order = Order::with('payment')->findOrFail($orderCode);
+
+        try {
+            $payOS = new \PayOS\PayOS(
+                config('payos.client_id'),
+                config('payos.api_key'),
+                config('payos.checksum_key')
+            );
+            $paymentLinkInfo = $payOS->paymentRequests->get($orderCode);
+
+            if ($paymentLinkInfo->status === 'PAID') {
+                DB::transaction(function () use ($order, $paymentLinkInfo) {
+                    $order->update(['status' => 'processing']);
+                    if ($order->payment) {
+                        $order->payment->update([
+                            'status' => 'completed',
+                            'transaction_id' => $paymentLinkInfo->id,
+                            'paid_at' => now(),
+                        ]);
+                    }
+                });
+                toastr()->success('Thanh toán đơn hàng thành công!');
+            } else {
+                toastr()->warning('Đơn hàng chưa được thanh toán thành công.');
+            }
+        } catch (\Exception $e) {
+            Log::error('PayOS Success query error: ' . $e->getMessage());
+            if ($status === 'PAID') {
+                DB::transaction(function () use ($order) {
+                    $order->update(['status' => 'processing']);
+                    if ($order->payment) {
+                        $order->payment->update([
+                            'status' => 'completed',
+                            'paid_at' => now(),
+                        ]);
+                    }
+                });
+                toastr()->success('Thanh toán đơn hàng thành công!');
+            } else {
+                toastr()->error('Không thể xác nhận trạng thái thanh toán từ PayOS.');
+            }
+        }
+
+        return redirect()->route('account');
+    }
+
+    public function payosCancel(Request $request)
+    {
+        $orderCode = $request->query('orderCode');
+        $order = Order::find($orderCode);
+        if ($order) {
+            toastr()->info('Thanh toán đã bị hủy. Bạn có thể thanh toán lại trong phần chi tiết đơn hàng.');
+        } else {
+            toastr()->error('Không tìm thấy đơn hàng.');
+        }
+        return redirect()->route('account');
+    }
+
+    public function payosPayAgain($id)
+    {
+        $user = Auth::user();
+        $order = Order::where('id', $id)->where('user_id', $user->id)->firstOrFail();
+
+        if ($order->status !== 'pending') {
+            toastr()->error('Đơn hàng này không ở trạng thái chờ thanh toán.');
+            return redirect()->route('account');
+        }
+
+        $payment = $order->payment;
+        if (!$payment || $payment->status === 'completed') {
+            toastr()->error('Đơn hàng này đã được thanh toán.');
+            return redirect()->route('account');
+        }
+
+        $payOS = new \PayOS\PayOS(
+            config('payos.client_id'),
+            config('payos.api_key'),
+            config('payos.checksum_key')
+        );
+
+        $payosItems = [];
+        foreach ($order->orderItems as $item) {
+            $payosItems[] = [
+                'name' => substr($item->product_name, 0, 50),
+                'quantity' => intval($item->quantity),
+                'price' => intval($item->price)
+            ];
+        }
+        $payosItems[] = [
+            'name' => 'Phí vận chuyển',
+            'quantity' => 1,
+            'price' => 25000
+        ];
+
+        $description = 'Thanh toan don #' . $order->id;
+        if (strlen($description) > 25) {
+            $description = substr($description, 0, 25);
+        }
+
+        $paymentData = [
+            'orderCode' => intval($order->id),
+            'amount' => intval($order->total_price),
+            'description' => $description,
+            'items' => $payosItems,
+            'returnUrl' => route('checkout.payos.success'),
+            'cancelUrl' => route('checkout.payos.cancel'),
+        ];
+
+        try {
+            try {
+                $payOS->paymentRequests->cancel($order->id, 'Khach hang thanh toan lai');
+            } catch (\Exception $cancelEx) {
+                // Ignore if it was not created or already cancelled/expired
+            }
+
+            $response = $payOS->paymentRequests->create($paymentData);
+            return redirect()->away($response->checkoutUrl);
+        } catch (\Exception $e) {
+            Log::error('PayOS pay again error: ' . $e->getMessage());
+            toastr()->error('Không thể kết nối tới cổng thanh toán PayOS. Vui lòng thử lại sau.');
+            return redirect()->route('account');
+        }
+    }
+
+    public function payosWebhook(Request $request)
+    {
+        try {
+            $payOS = new \PayOS\PayOS(
+                config('payos.client_id'),
+                config('payos.api_key'),
+                config('payos.checksum_key')
+            );
+
+            $webhookPayload = $request->all();
+            $verifiedData = $payOS->webhooks->verify($webhookPayload);
+
+            if ($verifiedData && $verifiedData->code === '00') {
+                $orderCode = $verifiedData->orderCode;
+                $order = Order::with('payment')->find($orderCode);
+
+                if ($order && $order->status === 'pending') {
+                    DB::transaction(function () use ($order, $verifiedData) {
+                        $order->update(['status' => 'processing']);
+                        if ($order->payment) {
+                            $order->payment->update([
+                                'status' => 'completed',
+                                'transaction_id' => $verifiedData->reference,
+                                'paid_at' => now(),
+                            ]);
+                        }
+                    });
+                }
+            }
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('PayOS webhook error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 400);
+        }
+    }
 }
+
