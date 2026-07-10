@@ -24,16 +24,12 @@
                                 <div class="well profile_view">
                                     <div class="col-sm-12">
                                         <h4 class="brief text-uppercase"><i>{{ $user->role->name }}</i></h4>
-                                        <div class="left col-md-7 col-sm-7">
+                                        <div class="left col-md-12 col-sm-12">
                                             <h2>{{ $user->name }}</h2>
                                             <p><strong>Email: </strong> {{ $user->email }} </p>
                                             <ul class="list-unstyled">
                                                 <li><i class="fa fa-phone"></i> SDT: {{ $user->phone_number }}</li>
                                             </ul>
-                                        </div>
-                                        <div class="right col-md-5 col-sm-5 text-center">
-                                            <img src="{{ asset('storage/' . ($user->avatar ?? 'uploads/users/defult-avatar.png')) }}"
-                                                alt="" class="img-circle img-fluid">
                                         </div>
                                     </div>
                                     <div class=" profile-bottom text-center">
