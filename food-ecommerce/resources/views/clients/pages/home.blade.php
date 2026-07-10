@@ -134,12 +134,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.25);
             z-index: 2;
             transition: all 0.4s ease;
         }
         .custom-banner-card.tall-card .custom-banner-overlay {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.25);
         }
         .custom-banner-content {
             position: relative;
@@ -161,19 +161,21 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #5d9e19;
+            color: #ffffff;
             margin-bottom: 10px;
             padding: 4px 12px;
-            background-color: rgba(93, 158, 25, 0.08);
+            background-color: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(5px);
             border-radius: 4px;
         }
         .custom-banner-title {
             font-family: var(--ltn__heading-font);
             font-size: 32px;
             font-weight: 700;
-            color: var(--ltn__heading-color);
+            color: #ffffff;
             line-height: 1.25;
             margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         .custom-banner-card.small-card .custom-banner-title {
             font-size: 24px;
@@ -182,9 +184,10 @@
         .custom-banner-desc {
             font-family: var(--ltn__body-font);
             font-size: 14px;
-            color: #555;
+            color: rgba(255, 255, 255, 0.9);
             margin-bottom: 22px;
             line-height: 1.6;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         }
         .custom-banner-card.small-card .custom-banner-desc {
             font-size: 13.5px;
@@ -257,7 +260,7 @@
                 align-items: flex-end;
             }
             .custom-banner-card.small-card .custom-banner-overlay {
-                background: rgba(255, 255, 255, 0.2);
+                background: rgba(0, 0, 0, 0.25);
             }
             .custom-banner-card.small-card .custom-banner-content {
                 max-width: 100%;
