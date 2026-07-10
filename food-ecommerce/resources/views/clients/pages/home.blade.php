@@ -134,12 +134,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 50%, rgba(255, 255, 255, 0) 100%);
+            background: rgba(255, 255, 255, 0.2);
             z-index: 2;
             transition: all 0.4s ease;
         }
         .custom-banner-card.tall-card .custom-banner-overlay {
-            background: linear-gradient(to top, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.85) 55%, rgba(255, 255, 255, 0) 100%);
+            background: rgba(255, 255, 255, 0.2);
         }
         .custom-banner-content {
             position: relative;
@@ -155,6 +155,7 @@
             padding: 30px 40px;
         }
         .custom-banner-tag {
+            font-family: var(--ltn__body-font);
             display: inline-block;
             font-size: 10px;
             font-weight: 800;
@@ -167,9 +168,10 @@
             border-radius: 4px;
         }
         .custom-banner-title {
+            font-family: var(--ltn__heading-font);
             font-size: 32px;
-            font-weight: 800;
-            color: #0d3a2f;
+            font-weight: 700;
+            color: var(--ltn__heading-color);
             line-height: 1.25;
             margin-bottom: 12px;
         }
@@ -178,8 +180,9 @@
             margin-bottom: 8px;
         }
         .custom-banner-desc {
+            font-family: var(--ltn__body-font);
             font-size: 14px;
-            color: #666;
+            color: #555;
             margin-bottom: 22px;
             line-height: 1.6;
         }
@@ -254,7 +257,7 @@
                 align-items: flex-end;
             }
             .custom-banner-card.small-card .custom-banner-overlay {
-                background: linear-gradient(to top, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.85) 60%, rgba(255, 255, 255, 0.1) 100%);
+                background: rgba(255, 255, 255, 0.2);
             }
             .custom-banner-card.small-card .custom-banner-content {
                 max-width: 100%;
