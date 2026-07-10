@@ -162,7 +162,9 @@ class CheckoutController extends Controller
             return redirect()->route('account');
         } catch (\Exception $e) {
             DB::rollBack();
-            toastr()->error('Có lỗi xảy ra, vui lòng thử lại.');
+            Log::error('Checkout error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            error_log('Checkout error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+            toastr()->error('Có lỗi xảy ra: ' . $e->getMessage());
             return redirect()->route('checkout');
         }
     }
