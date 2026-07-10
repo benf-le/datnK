@@ -566,77 +566,17 @@ $(document).ready(function () {
         });
     });
 
-    //Handle Paypal
+    //Handle Payment option text change
     function togglePayment() {
-        if ($("#payment_paypal").is(":checked")) {
-            $("#order_button_cash").hide();
-            $("#paypal-button-container").show();
+        if ($("#payment_payos").is(":checked")) {
+            $("#order_button_cash").text("Thanh toán ngay");
         } else {
-            $("#order_button_cash").show();
-            $("#paypal-button-container").hide();
-            if ($("#payment_payos").is(":checked")) {
-                $("#order_button_cash").text("Thanh toán ngay");
-            } else {
-                $("#order_button_cash").text("Đặt hàng");
-            }
+            $("#order_button_cash").text("Đặt hàng");
         }
     }
     togglePayment();
 
     $('input[name="payment_method"]').on("change", togglePayment);
-
-    var totalPriceText = $(".totalPrice_Checkout").text().trim();
-    var totalPriceNumber = parseFloat(
-        totalPriceText.replace(/\./g, "").replace(" ₫", "")
-    );
-
-    if (typeof paypal !== "undefined") {
-        paypal
-            .Buttons({
-                createOrder: function (data, actions) {
-                    return actions.order.create({
-                        purchase_units: [
-                            {
-                                amount: {
-                                    value: (totalPriceNumber / 25000).toFixed(2),
-                                },
-                            },
-                        ],
-                    });
-                },
-                onApprove: function (data, actions) {
-                    return actions.order.capture().then(function (details) {
-                        //Send information checkout to server
-                        fetch("/checkout/paypal", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                                    "content"
-                                ),
-                            },
-                            body: JSON.stringify({
-                                orderID: data.orderID,
-                                payerID: data.payerID,
-                                transactionID: details.id,
-                                amount: details.purchase_units[0].amount.value,
-                                address_id: $("#list_address").val(),
-                            }),
-                        })
-                            .then((response) => response.json())
-                            .then((data) => {
-                                if (data.success) {
-                                    toastr.success("Thanh toán thành công.");
-                                    window.location.href = "/account";
-                                } else {
-                                    alert("Có lỗi xảy ra, vui lòng thử lại.");
-                                }
-                            });
-                    });
-                },
-            })
-            .render("#paypal-button-container");
-    }
 
     /*********************************************
      *HANDLE RATING PRODUCT

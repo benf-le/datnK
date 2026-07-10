@@ -167,66 +167,6 @@ class CheckoutController extends Controller
         }
     }
 
-    public function placeOrderPayPal(Request $request)
-    {
-        DB::beginTransaction();
-
-        try {
-            $user = Auth::user();
-            $cartItems = CartItem::where('user_id', $user->id)->get();
-            //Fetch address details
-            $address = ShippingAddress::where('id', $request->address_id)->where('user_id', $user->id)->firstOrFail();
-
-            //Create order
-            $order = new Order();
-            $order->user_id = $user->id;
-            $order->shipping_full_name = $address->full_name;
-            $order->shipping_phone = $address->phone;
-            $order->shipping_address = $address->address;
-            $order->shipping_ward = $address->ward;
-            $order->shipping_district = $address->district;
-            $order->shipping_city = $address->city;
-            $order->total_price = $request->amount * 25000;
-            $order->status = 'pending'; //default is pending
-            $order->save();
-
-            foreach ($cartItems  as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item->product->id,
-                    'product_name' => $item->product->name,
-                    'quantity' => $item->quantity,
-                    'price' => $item->product->price
-                ]);
-
-                $product = $item->product;
-                if ($product->stock < $item->quantity) {
-                    throw new \Exception("Sản phẩm {$product->name} không đủ hàng trong kho");
-                }
-                $product->stock -= $item->quantity;
-                $product->save();
-            }
-
-            //Create payment
-            Payment::create([
-                'order_id' => $order->id,
-                'payment_method' => 'paypal',
-                'transaction_id' => $request->transactionID,
-                'amount' => $order->total_price,
-                'status' => 'completed',
-                'paid_at' => now(),
-            ]);
-
-            //Delete product in cart when order
-            CartItem::where('user_id', $user->id)->delete();
-
-            DB::commit();
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            toastr()->error('Có lỗi xảy ra, vui lòng thử lại.');
-            return redirect()->route('checkout');
-        }
-    }
 
     public function payosSuccess(Request $request)
     {
