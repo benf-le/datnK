@@ -70,7 +70,11 @@ class CheckoutController extends Controller
             $order->shipping_ward = $address->ward;
             $order->shipping_district = $address->district;
             $order->shipping_city = $address->city;
-            $order->total_price = $cartItems->sum(fn($item) => $item->quantity * $item->product->price) + 25000;
+            $subtotal = $cartItems->sum(fn($item) => $item->quantity * $item->product->price);
+            $order->subtotal = $subtotal;
+            $order->shipping_fee = 25000;
+            $order->discount_amount = 0;
+            $order->total_price = $subtotal + 25000;
             $order->status = 'pending'; //default is pending
             $order->save();
 
