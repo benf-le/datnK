@@ -36,7 +36,7 @@ class ProductController extends Controller
 
     public function filter(Request $request)
     {
-        $query = Product::with(['firstImage', 'reviews']);
+        $query = Product::with(['firstImage', 'reviews'])->where('status', 'in_stock');
 
         //Filter Category if exist
         if ($request->has('category_id') && $request->category_id != '') {

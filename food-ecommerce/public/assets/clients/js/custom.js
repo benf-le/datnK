@@ -285,7 +285,7 @@ $(document).ready(function () {
         });
 
         $.ajax({
-            url: "products/filter?page=" + currentPage,
+            url: "/products/filter?page=" + currentPage,
             type: "GET",
             data: {
                 category_id: category_id,
