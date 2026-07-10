@@ -24,7 +24,7 @@
                             <img src="{{ asset('assets/clients/img/icons/11.png') }}" alt="Icon Image">
                         </div>
                         <h3>Số điện thoại</h3>
-                        <p>0386 823 982</p>
+                        <p>0994 913 686</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -33,7 +33,7 @@
                             <img src="{{ asset('assets/clients/img/icons/12.png') }}" alt="Icon Image">
                         </div>
                         <h3>Công ty</h3>
-                        <p>Ngũ Hành Sơn, Đà Nẵng</p>
+                        <p>67 Ngũ Hành Sơn, Đà Nẵng</p>
                     </div>
                 </div>
             </div>

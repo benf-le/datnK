@@ -36,8 +36,8 @@
                     <h3 style="margin-bottom:5px;">Đến</h3>
                     <p style="margin:0;">
                         KFood<br>
-                        470 Trần Đại Nghĩa, Ngũ Hành Sơn, Đà Nẵng<br>
-                        SĐT: +84 386 823 982<br>
+                        67 Ngũ Hành Sơn, Đà Nẵng<br>
+                        SĐT: 0994 913 686<br>
                         Email: khanhhq.21ad@vku.udn.vn
                     </p>
                 </td>

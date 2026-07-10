@@ -126,6 +126,26 @@ async def async_delete_product_vectors(product_id: str):
     print(f"[Qdrant] Đã dọn dẹp xong vector cũ cho product_id: '{product_id}'.")
 
 
+async def async_delete_general_knowledge():
+    """
+    Xóa toàn bộ tài liệu tri thức chung (doc_type = "general_knowledge") để tránh trùng lặp/rác dữ liệu khi cập nhật.
+    """
+    await async_init_collection()
+    print("[Qdrant] Đang xóa toàn bộ các tài liệu tri thức chung cũ...")
+    await async_qdrant_client.delete(
+        collection_name=QDRANT_COLLECTION_NAME,
+        points_selector=models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="doc_type",
+                    match=models.MatchValue(value="general_knowledge")
+                )
+            ]
+        )
+    )
+    print("[Qdrant] Đã dọn dẹp xong tài liệu tri thức chung cũ.")
+
+
 async def async_ingest_product(
     product_id: str,
     name: str,

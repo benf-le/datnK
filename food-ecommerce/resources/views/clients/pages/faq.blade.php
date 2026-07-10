@@ -124,7 +124,7 @@
                             <div class="btn-wrapper mb-30">
                                 <a href="contact.html" class="theme-btn-1 btn">Liên hệ ngay</a>
                             </div>
-                            <h3><i class="fas fa-phone"></i> 0386 823 982</h3>
+                            <h3><i class="fas fa-phone"></i> 0994 913 686</h3>
                         </div>
                     </div>
                 </div>

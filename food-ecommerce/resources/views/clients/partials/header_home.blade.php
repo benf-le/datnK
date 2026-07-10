@@ -7,7 +7,7 @@
                 <div class="col-md-7">
                     <div class="ltn__top-bar-menu">
                         <ul>
-                            <li><a href="locations.html"><i class="icon-placeholder"></i> Ngũ Hành Sơn, Đà
+                            <li><a href="locations.html"><i class="icon-placeholder"></i> 67 Ngũ Hành Sơn, Đà
                                     Nẵng</a></li>
                             <li><a href="mailto:minhdien.dev@gmail.com?Subject=Contact%20with%20to%20you"><i
                                         class="icon-mail"></i> khanhhq.21ad@vku.udn.vn</a></li>

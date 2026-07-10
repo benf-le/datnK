@@ -340,10 +340,10 @@
                     <div class="call-to-action-inner call-to-action-inner-4 text-center">
                         <div class="section-title-area ltn__section-title-2">
                             <h6 class="section-subtitle ltn__secondary-color">bạn cần tư vấn?</h6>
-                            <h1 class="section-title white-color">0386 823 982</h1>
+                            <h1 class="section-title white-color">0994 913 686</h1>
                         </div>
                         <div class="btn-wrapper">
-                            <a href="tel:+123456789" class="theme-btn-1 btn btn-effect-1">GỌI NGAY</a>
+                            <a href="tel:0994913686" class="theme-btn-1 btn btn-effect-1">GỌI NGAY</a>
                             <a href="contact.html" class="btn btn-transparent btn-effect-4 white-color">LIÊN HỆ</a>
                         </div>
                     </div>

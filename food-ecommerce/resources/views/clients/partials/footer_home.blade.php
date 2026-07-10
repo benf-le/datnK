@@ -19,7 +19,7 @@
                                         <i class="icon-placeholder"></i>
                                     </div>
                                     <div class="footer-address-info">
-                                        <p>Ngũ Hành Sơn, Đà Nẵng, Việt Nam</p>
+                                        <p>67 Ngũ Hành Sơn, Đà Nẵng, Việt Nam</p>
                                     </div>
                                 </li>
                                 <li>
@@ -27,7 +27,7 @@
                                         <i class="icon-call"></i>
                                     </div>
                                     <div class="footer-address-info">
-                                        <p><a href="tel:+0123-456789">0386 823 982</a></p>
+                                        <p><a href="tel:0994913686">0994 913 686</a></p>
                                     </div>
                                 </li>
                                 <li>

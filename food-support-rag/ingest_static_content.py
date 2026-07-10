@@ -24,7 +24,7 @@ Cách dùng (từ thư mục food-support-rag, dùng python của venv):
 
 import asyncio
 
-from rag_service import async_ingest_document
+from rag_service import async_ingest_document, async_delete_general_knowledge
 
 # --- KHO TRI THỨC TĨNH: (Tiêu đề, Nội dung) ---
 # Mỗi phần tử được nạp thành 1 tài liệu tri thức riêng biệt.
@@ -42,9 +42,9 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
     (
         "Thông tin liên hệ KFood",
         "Khách hàng có thể liên hệ KFood qua các kênh sau:\n"
-        "- Số điện thoại (hotline): 0386 823 982.\n"
+        "- Số điện thoại (hotline): 0994 913 686.\n"
         "- Email: khanhhq.21ad@vku.udn.vn.\n"
-        "- Địa chỉ / công ty: Ngũ Hành Sơn, Đà Nẵng.\n"
+        "- Địa chỉ / công ty: 67 Ngũ Hành Sơn, Đà Nẵng.\n"
         "- Bộ phận chăm sóc khách hàng hỗ trợ 24/7.\n"
         "Khách hàng cần hỗ trợ hoặc muốn nhận báo giá có thể gọi hotline, gửi email "
         "hoặc điền form liên hệ trên website KFood."
@@ -61,7 +61,7 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
         "KFood chấp nhận đổi trả trong vòng 3 ngày kể từ khi nhận hàng nếu sản phẩm bị hư hỏng, "
         "giao sai loại hoặc không đạt chất lượng như cam kết. Tùy tình huống cụ thể, KFood sẽ "
         "hoàn tiền hoặc đổi sản phẩm mới cho khách hàng. Khi cần đổi trả hoặc hoàn tiền, khách hàng "
-        "hãy liên hệ ngay bộ phận chăm sóc khách hàng qua hotline 0386 823 982 để được hỗ trợ "
+        "hãy liên hệ ngay bộ phận chăm sóc khách hàng qua hotline 0994 913 686 để được hỗ trợ "
         "nhanh nhất."
     ),
     (
@@ -114,7 +114,13 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
 
 
 async def main() -> None:
-    print(f"--- Bắt đầu nạp {len(KNOWLEDGE_DOCS)} tài liệu tĩnh vào Qdrant ---\n")
+    print("--- Dọn dẹp dữ liệu cũ ---")
+    try:
+        await async_delete_general_knowledge()
+    except Exception as e:
+        print(f"[CẢNH BÁO] Không thể xóa dữ liệu cũ: {e}")
+
+    print(f"\n--- Bắt đầu nạp {len(KNOWLEDGE_DOCS)} tài liệu tĩnh vào Qdrant ---\n")
 
     success = 0
     for title, text in KNOWLEDGE_DOCS:
