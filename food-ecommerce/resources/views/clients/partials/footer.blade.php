@@ -1,6 +1,6 @@
 <!-- FOOTER AREA START -->
 <footer class="ltn__footer-area  ">
-    <div class="footer-top-area  section-bg-1 plr--5">
+    <div class="footer-top-area  section-bg-2 plr--5">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xl-3 col-md-6 col-sm-6 col-12">
