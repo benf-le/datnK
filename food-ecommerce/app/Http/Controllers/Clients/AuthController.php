@@ -90,7 +90,7 @@ class AuthController extends Controller
             }
         }
 
-        toastr()->error('Thông tin đăng nhập không chính xác hoặc tài khoản chưa kích hoạt.');
+        toastr()->error('Thông tin đăng nhập không chính xác.');
         return redirect()->back();
     }
 

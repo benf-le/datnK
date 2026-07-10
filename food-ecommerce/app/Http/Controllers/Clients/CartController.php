@@ -66,7 +66,7 @@ class CartController extends Controller
 
         return response()->json([
             'message' => true,
-            'car_count' => $cartCount
+            'cart_count' => $cartCount
         ]);
     }
 
@@ -101,7 +101,7 @@ class CartController extends Controller
 
         return response()->json([
             'status' => true,
-            'car_count' => $cartCount
+            'cart_count' => $cartCount
         ]);
     }
 

@@ -415,6 +415,19 @@ $(document).ready(function () {
                 $("#add_to_cart_modal-" + productId).modal("show");
                 $("#quick_view_modal-" + productId).modal("hide");
                 $(".cart-count-badge").text(response.cart_count);
+
+                // Tải lại nội dung mini-cart để đồng bộ thông tin mới nhất
+                $.ajax({
+                    url: "/mini-cart",
+                    type: "GET",
+                    success: function (miniCartResponse) {
+                        if (miniCartResponse.status) {
+                            $("#ltn__utilize-cart-menu .ltn__utilize-menu-inner").html(
+                                miniCartResponse.html
+                            );
+                        }
+                    }
+                });
             },
             error: function (xhr) {
                 alert("Có lỗi xảy ra với ajax addToCart In Detail!");
