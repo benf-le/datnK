@@ -51,10 +51,9 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
     ),
     (
         "Chính sách giao hàng KFood",
-        "KFood giao hàng tận nơi (tận nhà) nhanh chóng, an toàn và HOÀN TOÀN MIỄN PHÍ "
-        "trong khu vực nội thành. KFood hỗ trợ giao hàng 24/7. Sau khi khách xác nhận đơn hàng, "
-        "đội ngũ KFood sẽ liên hệ xác nhận lại và giao đến tận nhà trong thời gian nhanh nhất "
-        "có thể. Hiện KFood đã phục vụ hơn 15 tỉnh thành, giao thành công hơn 10.000 đơn hàng."
+        "Phí giao hàng của KFood là hoàn toàn 25000đ trong khu vực nội thành. KFood sẽ "
+        "giao hàng tận nhà trong thời gian nhanh nhất có thể sau khi khách xác nhận đơn hàng. "
+        "Hiện KFood đã phục vụ hơn 15 tỉnh thành, giao thành công hơn 10.000 đơn hàng."
     ),
     (
         "Chính sách đổi trả và hoàn tiền KFood",
@@ -97,7 +96,7 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
         "- Thực phẩm chế biến sẵn: chế biến từ nguyên liệu sạch, tiện lợi mà vẫn giữ trọn vị ngon tự nhiên.\n"
         "- Sản phẩm khô và ngũ cốc: các loại hạt, ngũ cốc, thực phẩm khô được bảo quản kỹ lưỡng.\n"
         "- Đồ uống thiên nhiên: nước ép và trà thảo mộc tươi mát, giúp thanh lọc cơ thể.\n"
-        "Điểm mạnh dịch vụ của KFood: giao hàng 24/7 miễn phí, đội ngũ chuyên môn tận tâm, "
+        "Điểm mạnh dịch vụ của KFood: giao hàng tận nhà nhanh chóng với phí 25.000đ, đội ngũ chuyên môn tận tâm, "
         "thiết bị đảm bảo vệ sinh và đa dạng sản phẩm cho mọi nhu cầu."
     ),
     (
@@ -106,7 +105,7 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
         "- Thương hiệu đáng tin cậy: hợp tác với nhiều thương hiệu uy tín, mang đến nguồn thực phẩm sạch, chất lượng.\n"
         "- Sản phẩm tươi ngon chọn lọc: mỗi sản phẩm được chọn lựa cẩn thận, đảm bảo tươi mới, an toàn, giữ trọn hương vị tự nhiên.\n"
         "- Thực phẩm không hóa chất: nói không với thuốc trừ sâu và chất bảo quản, nguồn gốc rõ ràng.\n"
-        "- Giao hàng miễn phí trong nội thành, nhanh chóng và tiện lợi.\n"
+        "- Giao hàng tận nhà nhanh chóng, tiện lợi với phí 25.000đ trong nội thành.\n"
         "KFood tự hào với hơn 500 khách hàng hài lòng, hơn 10.000 đơn hàng giao thành công, "
         "100% thực phẩm tươi sạch và phục vụ hơn 15 tỉnh thành."
     ),

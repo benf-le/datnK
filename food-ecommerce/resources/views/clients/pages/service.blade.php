@@ -29,7 +29,7 @@
                                 khỏe mạnh cho mọi gia đình Việt.</p>
                             <div class="list-item-with-icon">
                                 <ul>
-                                    <li><a href="javascript:void(0)">Giao hàng 24/7 miễn phí</a></li>
+                                    <li><a href="javascript:void(0)">Giao hàng nội thành phí 25.000đ</a></li>
                                     <li><a href="javascript:void(0)">Đội ngũ chuyên môn tận tâm</a></li>
                                     <li><a href="javascript:void(0)">Thiết bị đảm bảo vệ sinh</a></li>
                                     <li><a href="javascript:void(0)">Đa dạng sản phẩm cho mọi nhu cầu</a></li>
@@ -132,9 +132,8 @@
                                     alt="Giao hàng tận nơi"></a>
                         </div>
                         <div class="service-item-brief">
-                            <h3><a href="javascript:void(0)">Giao hàng tận nơi</a></h3>
-                            <p>KFood mang thực phẩm sạch đến tận nhà bạn nhanh chóng, an toàn và hoàn toàn miễn phí trong
-                                nội thành.</p>
+                             <h3><a href="javascript:void(0)">Giao hàng tận nơi</a></h3>
+                             <p>Phí giao hàng của KFood là hoàn toàn 25000đ trong khu vực nội thành. KFood sẽ giao hàng tận nhà trong thời gian nhanh nhất có thể sau khi khách xác nhận đơn hàng.</p>
                         </div>
                     </div>
                 </div>
