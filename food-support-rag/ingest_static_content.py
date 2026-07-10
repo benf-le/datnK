@@ -90,14 +90,12 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
     ),
     (
         "Dịch vụ và danh mục sản phẩm KFood",
-        "KFood cung cấp đa dạng sản phẩm cho mọi nhu cầu, bao gồm các danh mục:\n"
-        "- Rau củ hữu cơ: rau củ tươi ngon, trồng theo quy trình tự nhiên, không hóa chất độc hại.\n"
+        "KFood cung cấp các dịch vụ chất lượng cho khách hàng bao gồm:\n"
         "- Trái cây tươi sạch: giàu dinh dưỡng, thu hoạch từ nông trại an toàn, đạt tiêu chuẩn chất lượng cao.\n"
-        "- Thực phẩm chế biến sẵn: chế biến từ nguyên liệu sạch, tiện lợi mà vẫn giữ trọn vị ngon tự nhiên.\n"
-        "- Sản phẩm khô và ngũ cốc: các loại hạt, ngũ cốc, thực phẩm khô được bảo quản kỹ lưỡng.\n"
-        "- Đồ uống thiên nhiên: nước ép và trà thảo mộc tươi mát, giúp thanh lọc cơ thể.\n"
+        "- Thực phẩm tươi sống: cung cấp các loại thịt, cá, hải sản tươi sống chất lượng cao, có nguồn gốc rõ ràng và bảo quản an toàn.\n"
+        "- Giao hàng tận nơi: giao hàng tận nhà nhanh chóng với phí 25.000đ trong khu vực nội thành sau khi khách xác nhận đơn hàng.\n"
         "Điểm mạnh dịch vụ của KFood: giao hàng tận nhà nhanh chóng với phí 25.000đ, đội ngũ chuyên môn tận tâm, "
-        "thiết bị đảm bảo vệ sinh và đa dạng sản phẩm cho mọi nhu cầu."
+        "thiết bị đảm bảo vệ sinh và cung cấp thực phẩm tươi sạch an toàn."
     ),
     (
         "Cam kết và lý do chọn KFood",

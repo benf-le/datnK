@@ -30,9 +30,6 @@
                                     <h4 class="mb-0">Hồ Quốc Khánh</h4>
                                     <small>Giám Đốc Cửa Hàng</small>
                                 </div>
-                                <div class="author-sign">
-                                    <img src="{{ asset('assets/clients/img/icons/icon-img/author-sign.png') }}" alt="#">
-                                </div>
                             </div>
                         </div>
                     </div>

@@ -64,7 +64,6 @@
                                         <ul>
                                             <li><a href="{{ route('about') }}">Về chúng tôi</a></li>
                                             <li><a href="{{ route('service') }}">Dịch vụ</a></li>
-                                            <li><a href="{{ route('team') }}">Team</a></li>
                                             <li><a href="{{ route('faq') }}">FAQ</a></li>
                                         </ul>
                                     </li>
