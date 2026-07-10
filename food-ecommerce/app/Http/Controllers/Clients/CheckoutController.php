@@ -189,7 +189,7 @@ class CheckoutController extends Controller
             );
             $paymentLinkInfo = $payOS->paymentRequests->get($orderCode);
 
-            if ($paymentLinkInfo->status === 'PAID') {
+            if ($paymentLinkInfo->status->value === 'PAID') {
                 DB::transaction(function () use ($order, $paymentLinkInfo) {
                     $order->update(['status' => 'processing']);
                     if ($order->payment) {
