@@ -106,6 +106,9 @@ $(document).ready(function () {
     // Xử lý nút Reset cuộc trò chuyện từ Header
     $(document).on("click", "#chat-reset", function () {
         if (confirm("Bạn có chắc chắn muốn xóa lịch sử trò chuyện và bắt đầu lại không?")) {
+            // Xóa ngay lập tức trên UI để người dùng thấy phản hồi nhanh
+            $("#chat-messages").html("");
+            
             $("#message-input").val("").prop("disabled", true);
             $("#send-btn").prop("disabled", true);
             showTypingIndicator();
@@ -121,18 +124,19 @@ $(document).ready(function () {
                 $("#message-input").prop("disabled", false).focus();
                 $("#send-btn").prop("disabled", false);
 
-                if (res.cleared) {
-                    $("#chat-messages").html("");
-                    appendOne({
-                        sender: "bot",
-                        message: "Xin chào 👋! Tôi là trợ lý ảo hỗ trợ tìm kiếm sản phẩm và giải đáp thắc mắc. Tôi có thể giúp gì cho bạn hôm nay?"
-                    });
-                }
+                // Dù kết quả trả về như thế nào, ta vẫn hiển thị lời chào (vì UI đã xóa từ trước)
+                $("#chat-messages").html("");
+                appendOne({
+                    sender: "bot",
+                    message: "Xin chào 👋! Tôi là trợ lý ảo hỗ trợ tìm kiếm sản phẩm và giải đáp thắc mắc. Tôi có thể giúp gì cho bạn hôm nay?"
+                });
             }).fail(function () {
                 hideTypingIndicator();
                 $("#message-input").prop("disabled", false).focus();
                 $("#send-btn").prop("disabled", false);
                 alert("Không thể xóa lịch sử trò chuyện lúc này. Vui lòng thử lại sau.");
+                // Tải lại tin nhắn nếu xóa thất bại để đồng bộ lại
+                loadMessage();
             });
         }
     });

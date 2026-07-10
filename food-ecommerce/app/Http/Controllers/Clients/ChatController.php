@@ -46,9 +46,9 @@ class ChatController extends Controller
 
         // Check if user wants to reset chat history
         $messageText = trim($request->message);
-        $normalizedText = mb_strtolower($messageText, 'UTF-8');
-        $normalizedText = preg_replace('/\s+/', ' ', $normalizedText);
-        if ($normalizedText === 'bắt đầu lại' || $normalizedText === 'bat dau lai') {
+        $asciiText = mb_strtolower(Str::ascii($messageText), 'UTF-8');
+        $asciiText = preg_replace('/\s+/', ' ', $asciiText);
+        if ($asciiText === 'bat dau lai' || $asciiText === 'restart' || $asciiText === 'reset') {
             if ($userId) {
                 ChatMessage::where('user_id', $userId)->delete();
             } else {
