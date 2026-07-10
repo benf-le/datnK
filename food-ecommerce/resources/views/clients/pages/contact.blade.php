@@ -24,7 +24,7 @@
                             <img src="{{ asset('assets/clients/img/icons/11.png') }}" alt="Icon Image">
                         </div>
                         <h3>Số điện thoại</h3>
-                        <p>0386 823 982</p>
+                        <p>0994 913 686</p>
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -33,7 +33,7 @@
                             <img src="{{ asset('assets/clients/img/icons/12.png') }}" alt="Icon Image">
                         </div>
                         <h3>Công ty</h3>
-                        <p>Ngũ Hành Sơn, Đà Nẵng</p>
+                        <p>67 Ngũ Hành Sơn, Đà Nẵng</p>
                     </div>
                 </div>
             </div>
@@ -87,8 +87,8 @@
 
         <h4 class="text-center mb-3 fw-bold">📍 Vị trí của chúng tôi</h4>
         <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3835.734025012026!2d108.25065207490204!3d15.975260284690663!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142108997dc971f%3A0x1295cb3d313469c9!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBDw7RuZyBuZ2jhu4cgVGjDtG5nIHRpbiB2w6AgVHJ1eeG7gW4gdGjDtG5nIFZp4buHdCAtIEjDoG4sIMSQ4bqhaSBo4buNYyDEkMOgIE7hurVuZw!5e0!3m2!1svi!2s!4v1763012018908!5m2!1svi!2s"
-            width="100%" height="100%" frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3469.8650597255714!2d108.23598487459954!3d16.048579439991506!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314217628885af5f%3A0x85fefa82270e3f83!2zNjcgTmfFqSBIw6BuaCBTxqFuLCDEkMOgIE7hurVuZyA1NTAwMDAsIFZp4buHdCBOYW0!5e1!3m2!1svi!2s!4v1783707375785!5m2!1svi!2s"
+            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
     </div>
     <!-- GOOGLE MAP AREA END -->

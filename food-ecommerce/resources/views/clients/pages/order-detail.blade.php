@@ -39,6 +39,8 @@
                         <span class="badge bg-primary fs-6">💵 Thanh toán khi nhận hàng</span>
                     @elseif ($order->payment && $order->payment->payment_method === 'paypal')
                         <span class="badge bg-info fs-6">💳 Thanh toán bằng PayPal</span>
+                    @elseif ($order->payment && $order->payment->payment_method === 'payos')
+                        <span class="badge bg-success fs-6">💳 Thanh toán qua PayOS</span>
                     @else
                         <span class="badge bg-secondary fs-6">❔ Chưa xác định</span>
                     @endif
@@ -101,12 +103,20 @@
 
             <!-- Hành động -->
             @if ($order->status == 'pending')
-                <form action="{{ route('order.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');">
-                    @csrf
-                    <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill">
-                        <i class="bi bi-x-circle me-1"></i> Hủy đơn hàng
-                    </button>
-                </form>
+                <div class="d-flex gap-2 align-items-center">
+                    <form action="{{ route('order.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');" class="m-0">
+                        @csrf
+                        <button type="submit" class="btn btn-danger px-4 py-2 rounded-pill">
+                            <i class="bi bi-x-circle me-1"></i> Hủy đơn hàng
+                        </button>
+                    </form>
+                    
+                    @if ($order->payment && $order->payment->payment_method === 'payos' && $order->payment->status === 'pending')
+                        <a href="{{ route('order.payos.pay-again', $order->id) }}" class="btn btn-success px-4 py-2 rounded-pill" style="height: auto; line-height: normal; font-size: 14px; text-transform: none;">
+                            💵 Thanh toán ngay (PayOS)
+                        </a>
+                    @endif
+                </div>
             @endif
 
             <!-- Hành động -->

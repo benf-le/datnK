@@ -86,9 +86,9 @@
 
                                 <div class="card">
                                     <h5 class="collapsed ltn__card-title">
-                                        <input type="radio" name="payment_method" value="paypal" id="payment_paypal">
-                                        <label for="payment_paypal">
-                                            PayPal <img src="{{ asset('assets/clients/img/icons/payment-3.png') }}">
+                                        <input type="radio" name="payment_method" value="payos" id="payment_payos">
+                                        <label for="payment_payos">
+                                            Thanh toán qua QR Code (PayOS) <img src="https://img.vietqr.io/image/vietqr-logo-brand.png" style="height: 25px; margin-left: 5px;">
                                         </label>
                                     </h5>
                                 </div>
@@ -99,7 +99,6 @@
                                     phục vụ các mục đích khác theo chính sách bảo mật của KFood.</p>
                             </div>
                             <button class="btn theme-btn-1 btn-effect-1 text-uppercase" type="submit" id="order_button_cash">Đặt hàng</button>
-                            <div id="paypal-button-container"></div>
                         </form>
                     </div>
                 </div>
@@ -130,8 +129,4 @@
         </div>
     </div>
 
-@endsection
-
-@section('scripts')
-    <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_CLIENT_ID') }}&currency=USD"></script>
 @endsection

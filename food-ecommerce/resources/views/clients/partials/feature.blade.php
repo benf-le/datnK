@@ -44,8 +44,8 @@
                                     <img src="{{ asset('assets/clients/img/icons/icon-img/14.png') }}" alt="#">
                                 </div>
                                 <div class="ltn__feature-info">
-                                    <h4>Giao hàng miễn phí</h4>
-                                    <p>KFood giao hàng nhanh chóng, tiện lợi và hoàn toàn miễn phí trong khu vực nội thành.</p>
+                                    <h4>Phí giao hàng 25.000đ</h4>
+                                    <p>Phí giao hàng của KFood là hoàn toàn 25000đ trong khu vực nội thành. KFood sẽ giao hàng tận nhà trong thời gian nhanh nhất có thể sau khi khách xác nhận đơn hàng.</p>
                                 </div>
                             </div>
                         </div>

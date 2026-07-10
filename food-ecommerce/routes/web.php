@@ -71,9 +71,11 @@ Route::prefix('/')->middleware([DefaultClientData::class])->group(function () {
         Route::get('/checkout', action: [CheckoutController::class, 'index'])->name('checkout');
         Route::get('/checkout/get-address', action: [CheckoutController::class, 'getAddress']);
         Route::post('/checkout', action: [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
-        Route::post('/checkout/paypal', action: [CheckoutController::class, 'placeOrderPayPal'])->name('checkout.placeOrderPayPal');
+        Route::get('/checkout/payos/success', [CheckoutController::class, 'payosSuccess'])->name('checkout.payos.success');
+        Route::get('/checkout/payos/cancel', [CheckoutController::class, 'payosCancel'])->name('checkout.payos.cancel');
 
         Route::get('/order/{id}', action: [OrderController::class, 'showOrder'])->name('order.show');
+        Route::get('/order/{id}/payos-pay', [CheckoutController::class, 'payosPayAgain'])->name('order.payos.pay-again');
         Route::post('/order/{id}/received', action: [OrderController::class, 'received'])->name('order.received');
         Route::post('/order/{id}/cancel', action: [OrderController::class, 'cancel'])->name('order.cancel');
 
@@ -84,6 +86,8 @@ Route::prefix('/')->middleware([DefaultClientData::class])->group(function () {
         Route::post('/wishlist/add', [WishListController::class, 'addToWishList']);
         Route::post('/wishlist/remove', [WishListController::class, 'removeWishListItem']);
     });
+
+    Route::post('/webhook/payos', [CheckoutController::class, 'payosWebhook']);
 
 
     Route::get('/products', action: [ProductController::class, 'index'])->name('products.index');

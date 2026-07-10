@@ -49,8 +49,6 @@
             
         </main>
 
-        @include('clients.partials.feature')
-
         @include('clients.partials.footer')
     </div>
     <!-- Body main wrapper end -->

@@ -71,6 +71,7 @@
             </div>
         </div>
     </div>
-    <!-- PRODUCT DETAILS AREA END -->
-
+        @foreach ($products as $product)
+        @include('clients.components.includes.include-modals')
+    @endforeach
 @endsection

@@ -132,12 +132,12 @@
                     <div class="col-12">
                         <div class="ltn__category-item ltn__category-item-3 text-center">
                             <div class="ltn__category-item-img">
-                                <a href="{{ route('products.index') }}">
+                                <a href="{{ route('products.index', ['category_id' => $category->id]) }}">
                                     <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}">
                                 </a>
                             </div>
                             <div class="ltn__category-item-name">
-                                <h5><a href="{{ route('products.index') }}">{{ $category->name }}</a></h5>
+                                <h5><a href="{{ route('products.index', ['category_id' => $category->id]) }}">{{ $category->name }}</a></h5>
                                 <h6>({{ $category->products->count() }} sản phẩm)</h6>
                             </div>
                         </div>
@@ -191,8 +191,8 @@
 
                                                                 </li>
                                                                 <li>
-                                                                    <a href="#" title="Yêu thích" data-bs-toggle="modal"
-                                                                        data-bs-target="#liton_wishlist_modal-{{ $product->id }}">
+                                                                    <a href="javascript:void(0)" title="Yêu thích" class="add-to-wishlist"
+                                                                        data-id="{{ $product->id }}">
                                                                         <i class="far fa-heart"></i></a>
                                                                 </li>
                                                             </ul>
@@ -279,12 +279,12 @@
                     </div>
                 </div>
             </div>
-            <div class="row ltn__tab-product-slider-one-active--- slick-arrow-1">
+            <div class="row ltn__tab-product-slider-one-active slick-arrow-1">
                 @foreach ($bestSellingProducts as $product)
-                    <div class="col-lg-3 col-md-4 col-sm-6 col-6">
+                    <div class="col-lg-12">
                         <div class="ltn__product-item ltn__product-item-3 text-center">
                             <div class="product-img">
-                                <a href="#"><img src="{{ $product->image_url }}" alt="{{ $product->name }}"></a>
+                                <a href="{{ route('product.detail', $product->slug) }}"><img src="{{ $product->image_url }}" alt="{{ $product->name }}"></a>
                                 <div class="product-hover-action">
                                     <ul>
                                         <li>
@@ -314,13 +314,19 @@
                                 <h2 class="product-title"><a
                                         href="{{ route('product.detail', $product->slug) }}">{{ $product->name }}</a></h2>
                                 <div class="product-price">
-                                    <span>{{ number_format($product->price, 0, ',', '.') }} VND</span>
+                                    <span>{{ number_format($product->price, 0, ',', '.') }} ₫</span>
+                                </div>
+                                <div class="product-sold" style="font-size: 13px; color: #777; margin-top: 5px;">
+                                    <span>Đã bán: <strong>{{ $product->total_sold ?? 0 }}</strong></span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
+            @foreach ($bestSellingProducts as $product)
+                @include('clients.components.includes.include-modals')
+            @endforeach
         </div>
     </div>
     <!-- PRODUCT AREA END -->
@@ -334,10 +340,10 @@
                     <div class="call-to-action-inner call-to-action-inner-4 text-center">
                         <div class="section-title-area ltn__section-title-2">
                             <h6 class="section-subtitle ltn__secondary-color">bạn cần tư vấn?</h6>
-                            <h1 class="section-title white-color">0386 823 982</h1>
+                            <h1 class="section-title white-color">0994 913 686</h1>
                         </div>
                         <div class="btn-wrapper">
-                            <a href="tel:+123456789" class="theme-btn-1 btn btn-effect-1">GỌI NGAY</a>
+                            <a href="tel:0994913686" class="theme-btn-1 btn btn-effect-1">GỌI NGAY</a>
                             <a href="contact.html" class="btn btn-transparent btn-effect-4 white-color">LIÊN HỆ</a>
                         </div>
                     </div>

@@ -7,7 +7,7 @@
                 <div class="col-md-7">
                     <div class="ltn__top-bar-menu">
                         <ul>
-                            <li><a href="locations.html"><i class="icon-placeholder"></i> Ngũ Hành Sơn, Đà
+                            <li><a href="locations.html"><i class="icon-placeholder"></i> 67 Ngũ Hành Sơn, Đà
                                     Nẵng</a></li>
                             <li><a href="mailto:minhdien.dev@gmail.com?Subject=Contact%20with%20to%20you"><i
                                         class="icon-mail"></i> khanhhq.21ad@vku.udn.vn</a></li>
@@ -64,7 +64,6 @@
                                         <ul>
                                             <li><a href="{{ route('about') }}">Về chúng tôi</a></li>
                                             <li><a href="{{ route('service') }}">Dịch vụ</a></li>
-                                            <li><a href="{{ route('team') }}">Team</a></li>
                                             <li><a href="{{ route('faq') }}">FAQ</a></li>
                                         </ul>
                                     </li>
@@ -101,13 +100,7 @@
                     <div class="ltn__drop-menu user-menu">
                         <ul>
                             <li>
-                                @if (Auth::check())
-                                    <img src="{{ asset('storage/' . ($userClient->avatar ?? 'uploads/users/defult-avatar.png')) }}"
-                                        alt="Avatar"
-                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
-                                @else
-                                    <a href="#"><i class="icon-user"></i></a>
-                                @endif
+                                <a href="#"><i class="icon-user"></i></a>
                                 <ul>
                                     @if (Auth::check())
                                         <li><a href="{{ route('account') }}">Tài khoản</a></li>
@@ -115,6 +108,7 @@
                                         <li><a href="{{ route('logout') }}">Đăng xuất</a></li>
                                     @else
                                         <li><a href="{{ route('login') }}">Đăng nhập</a></li>
+                                        <li><a href="{{ route('register') }}">Đăng ký</a></li>
                                     @endif
                                 </ul>
                             </li>

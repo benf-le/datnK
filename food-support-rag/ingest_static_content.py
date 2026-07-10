@@ -24,7 +24,7 @@ Cách dùng (từ thư mục food-support-rag, dùng python của venv):
 
 import asyncio
 
-from rag_service import async_ingest_document
+from rag_service import async_ingest_document, async_delete_general_knowledge
 
 # --- KHO TRI THỨC TĨNH: (Tiêu đề, Nội dung) ---
 # Mỗi phần tử được nạp thành 1 tài liệu tri thức riêng biệt.
@@ -42,26 +42,25 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
     (
         "Thông tin liên hệ KFood",
         "Khách hàng có thể liên hệ KFood qua các kênh sau:\n"
-        "- Số điện thoại (hotline): 0386 823 982.\n"
+        "- Số điện thoại (hotline): 0994 913 686.\n"
         "- Email: khanhhq.21ad@vku.udn.vn.\n"
-        "- Địa chỉ / công ty: Ngũ Hành Sơn, Đà Nẵng.\n"
+        "- Địa chỉ / công ty: 67 Ngũ Hành Sơn, Đà Nẵng.\n"
         "- Bộ phận chăm sóc khách hàng hỗ trợ 24/7.\n"
         "Khách hàng cần hỗ trợ hoặc muốn nhận báo giá có thể gọi hotline, gửi email "
         "hoặc điền form liên hệ trên website KFood."
     ),
     (
         "Chính sách giao hàng KFood",
-        "KFood giao hàng tận nơi (tận nhà) nhanh chóng, an toàn và HOÀN TOÀN MIỄN PHÍ "
-        "trong khu vực nội thành. KFood hỗ trợ giao hàng 24/7. Sau khi khách xác nhận đơn hàng, "
-        "đội ngũ KFood sẽ liên hệ xác nhận lại và giao đến tận nhà trong thời gian nhanh nhất "
-        "có thể. Hiện KFood đã phục vụ hơn 15 tỉnh thành, giao thành công hơn 10.000 đơn hàng."
+        "Phí giao hàng của KFood là hoàn toàn 25000đ trong khu vực nội thành. KFood sẽ "
+        "giao hàng tận nhà trong thời gian nhanh nhất có thể sau khi khách xác nhận đơn hàng. "
+        "Hiện KFood đã phục vụ hơn 15 tỉnh thành, giao thành công hơn 10.000 đơn hàng."
     ),
     (
         "Chính sách đổi trả và hoàn tiền KFood",
         "KFood chấp nhận đổi trả trong vòng 3 ngày kể từ khi nhận hàng nếu sản phẩm bị hư hỏng, "
         "giao sai loại hoặc không đạt chất lượng như cam kết. Tùy tình huống cụ thể, KFood sẽ "
         "hoàn tiền hoặc đổi sản phẩm mới cho khách hàng. Khi cần đổi trả hoặc hoàn tiền, khách hàng "
-        "hãy liên hệ ngay bộ phận chăm sóc khách hàng qua hotline 0386 823 982 để được hỗ trợ "
+        "hãy liên hệ ngay bộ phận chăm sóc khách hàng qua hotline 0994 913 686 để được hỗ trợ "
         "nhanh nhất."
     ),
     (
@@ -91,14 +90,12 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
     ),
     (
         "Dịch vụ và danh mục sản phẩm KFood",
-        "KFood cung cấp đa dạng sản phẩm cho mọi nhu cầu, bao gồm các danh mục:\n"
-        "- Rau củ hữu cơ: rau củ tươi ngon, trồng theo quy trình tự nhiên, không hóa chất độc hại.\n"
+        "KFood cung cấp các dịch vụ chất lượng cho khách hàng bao gồm:\n"
         "- Trái cây tươi sạch: giàu dinh dưỡng, thu hoạch từ nông trại an toàn, đạt tiêu chuẩn chất lượng cao.\n"
-        "- Thực phẩm chế biến sẵn: chế biến từ nguyên liệu sạch, tiện lợi mà vẫn giữ trọn vị ngon tự nhiên.\n"
-        "- Sản phẩm khô và ngũ cốc: các loại hạt, ngũ cốc, thực phẩm khô được bảo quản kỹ lưỡng.\n"
-        "- Đồ uống thiên nhiên: nước ép và trà thảo mộc tươi mát, giúp thanh lọc cơ thể.\n"
-        "Điểm mạnh dịch vụ của KFood: giao hàng 24/7 miễn phí, đội ngũ chuyên môn tận tâm, "
-        "thiết bị đảm bảo vệ sinh và đa dạng sản phẩm cho mọi nhu cầu."
+        "- Thực phẩm tươi sống: cung cấp các loại thịt, cá, hải sản tươi sống chất lượng cao, có nguồn gốc rõ ràng và bảo quản an toàn.\n"
+        "- Giao hàng tận nơi: giao hàng tận nhà nhanh chóng với phí 25.000đ trong khu vực nội thành sau khi khách xác nhận đơn hàng.\n"
+        "Điểm mạnh dịch vụ của KFood: giao hàng tận nhà nhanh chóng với phí 25.000đ, đội ngũ chuyên môn tận tâm, "
+        "thiết bị đảm bảo vệ sinh và cung cấp thực phẩm tươi sạch an toàn."
     ),
     (
         "Cam kết và lý do chọn KFood",
@@ -106,7 +103,7 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
         "- Thương hiệu đáng tin cậy: hợp tác với nhiều thương hiệu uy tín, mang đến nguồn thực phẩm sạch, chất lượng.\n"
         "- Sản phẩm tươi ngon chọn lọc: mỗi sản phẩm được chọn lựa cẩn thận, đảm bảo tươi mới, an toàn, giữ trọn hương vị tự nhiên.\n"
         "- Thực phẩm không hóa chất: nói không với thuốc trừ sâu và chất bảo quản, nguồn gốc rõ ràng.\n"
-        "- Giao hàng miễn phí trong nội thành, nhanh chóng và tiện lợi.\n"
+        "- Giao hàng tận nhà nhanh chóng, tiện lợi với phí 25.000đ trong nội thành.\n"
         "KFood tự hào với hơn 500 khách hàng hài lòng, hơn 10.000 đơn hàng giao thành công, "
         "100% thực phẩm tươi sạch và phục vụ hơn 15 tỉnh thành."
     ),
@@ -114,7 +111,13 @@ KNOWLEDGE_DOCS: list[tuple[str, str]] = [
 
 
 async def main() -> None:
-    print(f"--- Bắt đầu nạp {len(KNOWLEDGE_DOCS)} tài liệu tĩnh vào Qdrant ---\n")
+    print("--- Dọn dẹp dữ liệu cũ ---")
+    try:
+        await async_delete_general_knowledge()
+    except Exception as e:
+        print(f"[CẢNH BÁO] Không thể xóa dữ liệu cũ: {e}")
+
+    print(f"\n--- Bắt đầu nạp {len(KNOWLEDGE_DOCS)} tài liệu tĩnh vào Qdrant ---\n")
 
     success = 0
     for title, text in KNOWLEDGE_DOCS:

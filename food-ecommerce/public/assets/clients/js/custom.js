@@ -285,7 +285,7 @@ $(document).ready(function () {
         });
 
         $.ajax({
-            url: "products/filter?page=" + currentPage,
+            url: "/products/filter?page=" + currentPage,
             type: "GET",
             data: {
                 category_id: category_id,
@@ -323,13 +323,16 @@ $(document).ready(function () {
         fetchProducts();
     });
 
+    const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
     $(".slider-range").slider({
         range: true,
         min: 0,
         max: 300000,
+        step: 1000,
         values: [0, 300000],
         slide: function (event, ui) {
-            $(".amount").val(ui.values[0] + " - " + ui.values[1] + " ₫");
+            $(".amount").val(formatNumber(ui.values[0]) + " - " + formatNumber(ui.values[1]) + " ₫");
         },
         change: function (event, ui) {
             currentPage = 1;
@@ -337,9 +340,9 @@ $(document).ready(function () {
         },
     });
     $(".amount").val(
-        $(".slider-range").slider("values", 0) +
+        formatNumber($(".slider-range").slider("values", 0)) +
             " - " +
-            $(".slider-range").slider("values", 1) +
+            formatNumber($(".slider-range").slider("values", 1)) +
             " ₫"
     );
 
@@ -415,6 +418,19 @@ $(document).ready(function () {
                 $("#add_to_cart_modal-" + productId).modal("show");
                 $("#quick_view_modal-" + productId).modal("hide");
                 $(".cart-count-badge").text(response.cart_count);
+
+                // Tải lại nội dung mini-cart để đồng bộ thông tin mới nhất
+                $.ajax({
+                    url: "/mini-cart",
+                    type: "GET",
+                    success: function (miniCartResponse) {
+                        if (miniCartResponse.status) {
+                            $("#ltn__utilize-cart-menu .ltn__utilize-menu-inner").html(
+                                miniCartResponse.html
+                            );
+                        }
+                    }
+                });
             },
             error: function (xhr) {
                 alert("Có lỗi xảy ra với ajax addToCart In Detail!");
@@ -566,72 +582,17 @@ $(document).ready(function () {
         });
     });
 
-    //Handle Paypal
+    //Handle Payment option text change
     function togglePayment() {
-        if ($("#payment_paypal").is(":checked")) {
-            $("#order_button_cash").hide();
-            $("#paypal-button-container").show();
+        if ($("#payment_payos").is(":checked")) {
+            $("#order_button_cash").text("Thanh toán ngay");
         } else {
-            $("#order_button_cash").show();
-            $("#paypal-button-container").hide();
+            $("#order_button_cash").text("Đặt hàng");
         }
     }
     togglePayment();
 
-    $('input[name="payment_method"').on("change", togglePayment);
-
-    var totalPriceText = $(".totalPrice_Checkout").text().trim();
-    var totalPriceNumber = parseFloat(
-        totalPriceText.replace(/\./g, "").replace(" ₫", "")
-    );
-
-    if (typeof paypal !== "undefined") {
-        paypal
-            .Buttons({
-                createOrder: function (data, actions) {
-                    return actions.order.create({
-                        purchase_units: [
-                            {
-                                amount: {
-                                    value: (totalPriceNumber / 25000).toFixed(2),
-                                },
-                            },
-                        ],
-                    });
-                },
-                onApprove: function (data, actions) {
-                    return actions.order.capture().then(function (details) {
-                        //Send information checkout to server
-                        fetch("/checkout/paypal", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                                    "content"
-                                ),
-                            },
-                            body: JSON.stringify({
-                                orderID: data.orderID,
-                                payerID: data.payerID,
-                                transactionID: details.id,
-                                amount: details.purchase_units[0].amount.value,
-                                address_id: $("#list_address").val(),
-                            }),
-                        })
-                            .then((response) => response.json())
-                            .then((data) => {
-                                if (data.success) {
-                                    toastr.success("Thanh toán thành công.");
-                                    window.location.href = "/account";
-                                } else {
-                                    alert("Có lỗi xảy ra, vui lòng thử lại.");
-                                }
-                            });
-                    });
-                },
-            })
-            .render("#paypal-button-container");
-    }
+    $('input[name="payment_method"]').on("change", togglePayment);
 
     /*********************************************
      *HANDLE RATING PRODUCT
