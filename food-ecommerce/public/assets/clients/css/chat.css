@@ -150,6 +150,31 @@
     margin-top: 1px;
 }
 
+.chat-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#chat-reset {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#chat-reset:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(-180deg);
+}
+
 #chat-close {
     background: rgba(255, 255, 255, 0.15);
     border: none;

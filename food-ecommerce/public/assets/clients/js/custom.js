@@ -323,13 +323,16 @@ $(document).ready(function () {
         fetchProducts();
     });
 
+    const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
     $(".slider-range").slider({
         range: true,
         min: 0,
         max: 300000,
+        step: 1000,
         values: [0, 300000],
         slide: function (event, ui) {
-            $(".amount").val(ui.values[0] + " - " + ui.values[1] + " ₫");
+            $(".amount").val(formatNumber(ui.values[0]) + " - " + formatNumber(ui.values[1]) + " ₫");
         },
         change: function (event, ui) {
             currentPage = 1;
@@ -337,9 +340,9 @@ $(document).ready(function () {
         },
     });
     $(".amount").val(
-        $(".slider-range").slider("values", 0) +
+        formatNumber($(".slider-range").slider("values", 0)) +
             " - " +
-            $(".slider-range").slider("values", 1) +
+            formatNumber($(".slider-range").slider("values", 1)) +
             " ₫"
     );
 

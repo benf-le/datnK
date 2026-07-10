@@ -44,6 +44,23 @@ class ChatController extends Controller
             }
         }
 
+        // Check if user wants to reset chat history
+        $messageText = trim($request->message);
+        $normalizedText = mb_strtolower($messageText, 'UTF-8');
+        $normalizedText = preg_replace('/\s+/', ' ', $normalizedText);
+        if ($normalizedText === 'bắt đầu lại' || $normalizedText === 'bat dau lai') {
+            if ($userId) {
+                ChatMessage::where('user_id', $userId)->delete();
+            } else {
+                if ($guestToken) {
+                    ChatMessage::where('guest_token', $guestToken)->delete();
+                }
+            }
+            return response()->json([
+                'cleared' => true
+            ]);
+        }
+
         // 1) Save message user to DB
         $userMsg = ChatMessage::create([
             'user_id' => $userId,

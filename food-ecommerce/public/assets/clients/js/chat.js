@@ -60,11 +60,17 @@ $(document).ready(function () {
             $("#message-input").prop("disabled", false).focus();
             $("#send-btn").prop("disabled", false);
 
-            // Hiển thị tin nhắn trả về từ Bot
-            if (res.bot) {
+            // Hiển thị tin nhắn trả về từ Bot hoặc làm sạch lịch sử
+            if (res.cleared) {
+                $("#chat-messages").html("");
+                appendOne({
+                    sender: "bot",
+                    message: "Xin chào 👋! Tôi là trợ lý ảo hỗ trợ tìm kiếm sản phẩm và giải đáp thắc mắc. Tôi có thể giúp gì cho bạn hôm nay?"
+                });
+            } else if (res.bot) {
                 appendOne(res.bot);
             } else {
-                console.error("[Chat] Phản hồi /chat/send không có trường 'bot':", res);
+                console.error("[Chat] Phản hồi /chat/send không hợp lệ:", res);
             }
         }).fail(function (jqXHR, textStatus, errorThrown) {
             console.error("[Chat] Gọi /chat/send thất bại:", textStatus, errorThrown, jqXHR.responseText);
@@ -94,6 +100,40 @@ $(document).ready(function () {
         if (replyText) {
             $("#message-input").val(replyText);
             $("#send-btn").click();
+        }
+    });
+
+    // Xử lý nút Reset cuộc trò chuyện từ Header
+    $(document).on("click", "#chat-reset", function () {
+        if (confirm("Bạn có chắc chắn muốn xóa lịch sử trò chuyện và bắt đầu lại không?")) {
+            $("#message-input").val("").prop("disabled", true);
+            $("#send-btn").prop("disabled", true);
+            showTypingIndicator();
+
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+            });
+
+            $.post("/chat/send", { message: "bắt đầu lại" }, function (res) {
+                hideTypingIndicator();
+                $("#message-input").prop("disabled", false).focus();
+                $("#send-btn").prop("disabled", false);
+
+                if (res.cleared) {
+                    $("#chat-messages").html("");
+                    appendOne({
+                        sender: "bot",
+                        message: "Xin chào 👋! Tôi là trợ lý ảo hỗ trợ tìm kiếm sản phẩm và giải đáp thắc mắc. Tôi có thể giúp gì cho bạn hôm nay?"
+                    });
+                }
+            }).fail(function () {
+                hideTypingIndicator();
+                $("#message-input").prop("disabled", false).focus();
+                $("#send-btn").prop("disabled", false);
+                alert("Không thể xóa lịch sử trò chuyện lúc này. Vui lòng thử lại sau.");
+            });
         }
     });
 

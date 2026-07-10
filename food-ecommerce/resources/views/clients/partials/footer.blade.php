@@ -104,8 +104,6 @@
                                 </div>
                             </form>
                         </div>
-                        <h5 class="mt-30">Chúng tôi chấp nhận</h5>
-                        <img src="{{ asset('assets/clients/img/icons/payment-4.png') }}" alt="Payment Image">
                     </div>
                 </div>
             </div>
