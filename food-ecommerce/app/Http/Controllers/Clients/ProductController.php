@@ -13,10 +13,21 @@ use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $categories = Category::all();
-        $products = Product::with(['firstImage', 'reviews'])->where('status', 'in_stock')->paginate(9);
+        $query = Product::with(['firstImage', 'reviews'])->where('status', 'in_stock');
+
+        // Check if category_id filter exists on page load
+        if ($request->has('category_id') && $request->category_id != '') {
+            $categoryId = $request->category_id;
+            $categoryIds = Category::where('id', $categoryId)
+                ->orWhere('parent_id', $categoryId)
+                ->pluck('id');
+            $query->whereIn('category_id', $categoryIds);
+        }
+
+        $products = $query->paginate(9)->withQueryString();
 
         $productsHighRate = Product::with(['firstImage', 'reviews'])->withAvg('reviews', 'rating')->orderByDesc('reviews_avg_rating')->limit(2)->get();
 
@@ -29,7 +40,11 @@ class ProductController extends Controller
 
         //Filter Category if exist
         if ($request->has('category_id') && $request->category_id != '') {
-            $query->where('category_id', $request->category_id);
+            $categoryId = $request->category_id;
+            $categoryIds = Category::where('id', $categoryId)
+                ->orWhere('parent_id', $categoryId)
+                ->pluck('id');
+            $query->whereIn('category_id', $categoryIds);
         }
 
         //Filter Price if exist
@@ -38,7 +53,7 @@ class ProductController extends Controller
         }
 
         //Filter SortBy if exist
-        if ($request->has('category_id') && $request->category_id != '') {
+        if ($request->has('sort_by') && $request->sort_by != '') {
             switch ($request->sort_by) {
                 case 'price_asc':
                     $query->orderBy('price', 'asc');

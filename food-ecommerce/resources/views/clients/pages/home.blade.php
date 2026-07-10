@@ -132,12 +132,12 @@
                     <div class="col-12">
                         <div class="ltn__category-item ltn__category-item-3 text-center">
                             <div class="ltn__category-item-img">
-                                <a href="{{ route('products.index') }}">
+                                <a href="{{ route('products.index', ['category_id' => $category->id]) }}">
                                     <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}">
                                 </a>
                             </div>
                             <div class="ltn__category-item-name">
-                                <h5><a href="{{ route('products.index') }}">{{ $category->name }}</a></h5>
+                                <h5><a href="{{ route('products.index', ['category_id' => $category->id]) }}">{{ $category->name }}</a></h5>
                                 <h6>({{ $category->products->count() }} sản phẩm)</h6>
                             </div>
                         </div>

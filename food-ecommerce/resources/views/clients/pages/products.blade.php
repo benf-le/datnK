@@ -53,7 +53,7 @@
                             <h4 class="ltn__widget-title ltn__widget-title-border">Danh mục</h4>
                             <ul>
                                 @foreach ($categories as $category)
-                                    <li><a href="javascript:void(0)" class="category-filter"
+                                    <li><a href="javascript:void(0)" class="category-filter{{ request('category_id') == $category->id ? ' active' : '' }}"
                                             data-id="{{ $category->id }}">{{ $category->name }}
                                             <span><i class="fas fa-long-arrow-alt-right"></i></span></a>
                                     </li>
