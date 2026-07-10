@@ -66,7 +66,7 @@
     }
 
     .premium-title {
-        font-family: 'Outfit', 'Inter', sans-serif;
+        font-family: var(--ltn__heading-font);
         font-weight: 800;
         font-size: 2.5rem;
         color: #1a1a1a;
