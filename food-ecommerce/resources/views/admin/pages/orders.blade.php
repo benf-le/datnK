@@ -56,9 +56,9 @@
                                                 @foreach ($orders as $order)
                                                     <tr>
                                                         <td>{{ $order->id }}</td>
-                                                        <td>{{ $order->user->name }}</td>
+                                                        <td>{{ $order->user ? $order->user->name : 'Tài khoản đã bị xóa' }}</td>
                                                         <td>
-                                                            <a href="javascript:void(0)" data-toggle="modal" data-target="#addressShippingModal-{{ $order->id }}">{{ $order->shippingAddress->address }}</a>
+                                                            <a href="javascript:void(0)" data-toggle="modal" data-target="#addressShippingModal-{{ $order->id }}">{{ $order->shippingAddress ? $order->shippingAddress->address : 'N/A' }}</a>
                                                         </td>
                                                         <td>{{ number_format($order->total_price, 0, ',', '.') }} ₫ </td>
                                                         <td class="order-status">
@@ -73,7 +73,7 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            @if ($order->payment->status == 'pending')
+                                                            @if (!$order->payment || $order->payment->status == 'pending')
                                                                 <span class="custom-badge badge badge-danger">Chưa thanh toán</span>
                                                             @else
                                                                 <span class="custom-badge badge badge-success">Đã thanh toán</span>
@@ -120,10 +120,10 @@
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <p>Ngời nhận: {{ $order->shippingAddress->full_name }}</p>
-                                                            <p>Địa chỉ: {{ $order->shippingAddress->address }}</p>
-                                                            <p>Thành phố: {{ $order->shippingAddress->city }}</p>
-                                                            <p>Số điện thoại: {{ $order->shippingAddress->phone }}</p>
+                                                            <p>Người nhận: {{ $order->shippingAddress ? $order->shippingAddress->full_name : 'N/A' }}</p>
+                                                            <p>Địa chỉ: {{ $order->shippingAddress ? $order->shippingAddress->address : 'N/A' }}</p>
+                                                            <p>Thành phố: {{ $order->shippingAddress ? $order->shippingAddress->city : 'N/A' }}</p>
+                                                            <p>Số điện thoại: {{ $order->shippingAddress ? $order->shippingAddress->phone : 'N/A' }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -163,7 +163,7 @@
                                                                     @foreach ($order->orderItems as $item)
                                                                         <tr>
                                                                             <td>{{ $index++ }}</td>
-                                                                            <td>{{ $item->product->name }}</td>
+                                                                            <td>{{ $item->product ? $item->product->name : 'Sản phẩm đã bị xóa' }}</td>
                                                                             <td>{{ $item->quantity }}</td>
                                                                             <td>{{ number_format($item->price, 0, ',', '.') }} ₫</td>
                                                                             <td>{{ number_format($item->quantity * $item->price, 0, ',', '.') }} ₫</td>

@@ -68,11 +68,11 @@
                             @foreach ($order->orderItems as $item)
                                 <tr>
                                     <td class="text-center">
-                                        <img src="{{ $item->product->image_url }}" 
+                                        <img src="{{ $item->product ? $item->product->image_url : '#' }}" 
                                              class="rounded-3 shadow-sm" width="65">
                                     </td>
                                     <td class="text-center">
-                                        <strong >{{ $item->product->name }}</strong>
+                                        <strong >{{ $item->product ? $item->product->name : 'Sản phẩm đã bị xóa' }}</strong>
                                     </td>
                                     <td class="text-center">{{ number_format($item->price, 0, ',', '.') }} ₫</td>
                                     <td class="text-center">{{ $item->quantity }}</td>
@@ -91,10 +91,10 @@
                 <h5 class="fw-bold mb-3 border-bottom pb-2">📦 Thông tin giao hàng</h5>
                 <div class="bg-light p-3 rounded-3">
                     <ul class="list-unstyled mb-0">
-                        <li><strong>Người nhận:</strong> {{ $order->shippingAddress->full_name }}</li>
-                        <li><strong>Địa chỉ:</strong> {{ $order->shippingAddress->address }}</li>
-                        <li><strong>Thành phố:</strong> {{ $order->shippingAddress->city }}</li>
-                        <li><strong>Số điện thoại:</strong> {{ $order->shippingAddress->phone }}</li>
+                        <li><strong>Người nhận:</strong> {{ $order->shippingAddress ? $order->shippingAddress->full_name : 'N/A' }}</li>
+                        <li><strong>Địa chỉ:</strong> {{ $order->shippingAddress ? $order->shippingAddress->address : 'N/A' }}</li>
+                        <li><strong>Thành phố:</strong> {{ $order->shippingAddress ? $order->shippingAddress->city : 'N/A' }}</li>
+                        <li><strong>Số điện thoại:</strong> {{ $order->shippingAddress ? $order->shippingAddress->phone : 'N/A' }}</li>
                     </ul>
                 </div>
             </div>

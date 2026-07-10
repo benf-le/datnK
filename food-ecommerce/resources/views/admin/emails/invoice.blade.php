@@ -17,7 +17,7 @@
         </p>
 
         <!-- Greeting -->
-        <p>Chào <strong>{{ $order->shippingAddress->full_name }}</strong>,</p>
+        <p>Chào <strong>{{ $order->shippingAddress ? $order->shippingAddress->full_name : 'N/A' }}</strong>,</p>
         <p>Cảm ơn bạn đã mua hàng tại <strong>KFood</strong>. Dưới đây là thông tin đơn hàng của bạn.</p>
 
         <!-- From - To -->
@@ -26,10 +26,10 @@
                 <td style="vertical-align:top; width:50%;">
                     <h3 style="margin-bottom:5px;">Từ</h3>
                     <p style="margin:0;">
-                        <strong>{{ $order->shippingAddress->full_name }}</strong><br>
-                        {{ $order->shippingAddress->address }}<br>
-                        {{ $order->shippingAddress->city }}<br>
-                        SĐT: {{ $order->shippingAddress->phone }}
+                        <strong>{{ $order->shippingAddress ? $order->shippingAddress->full_name : 'N/A' }}</strong><br>
+                        {{ $order->shippingAddress ? $order->shippingAddress->address : 'N/A' }}<br>
+                        {{ $order->shippingAddress ? $order->shippingAddress->city : 'N/A' }}<br>
+                        SĐT: {{ $order->shippingAddress ? $order->shippingAddress->phone : 'N/A' }}
                     </p>
                 </td>
                 <td style="vertical-align:top; width:50%;">
@@ -48,8 +48,8 @@
         <h3>Thông tin khách hàng</h3>
         <p style="margin:0;">
             <strong>Mã đơn hàng:</strong> #{{ $order->id }}<br>
-            <strong>Email:</strong> {{ $order->user->email }}<br>
-            <strong>Tài khoản:</strong> {{ $order->user->name }}
+            <strong>Email:</strong> {{ $order->user ? $order->user->email : 'N/A' }}<br>
+            <strong>Tài khoản:</strong> {{ $order->user ? $order->user->name : 'Tài khoản đã bị xóa' }}
         </p>
 
         <!-- Order Detail -->
@@ -68,9 +68,9 @@
                 @foreach($order->orderItems as $item)
                     <tr style="border-bottom:1px solid #ddd;">
                         <td style="padding:10px;">
-                            <img src="{{ $item->product->image_url }}" width="50" style="border-radius:5px;">
+                            <img src="{{ $item->product ? $item->product->image_url : '#' }}" width="50" style="border-radius:5px;">
                         </td>
-                        <td style="padding:10px;">{{ $item->product->name }}</td>
+                        <td style="padding:10px;">{{ $item->product ? $item->product->name : 'Sản phẩm đã bị xóa' }}</td>
                         <td style="padding:10px; text-align:right;">
                             {{ number_format($item->price, 0, ',', '.') }} ₫
                         </td>
@@ -92,9 +92,9 @@
             text-align:center; 
             border-radius:5px;
             color:#fff;
-            background: {{ $order->payment->payment_method == 'paypal' ? '#0070ba' : '#28a745' }};
+            background: {{ ($order->payment && $order->payment->payment_method == 'paypal') ? '#0070ba' : '#28a745' }};
         ">
-            {{ $order->payment->payment_method == 'paypal' ? 'Thanh toán PayPal' : 'Thanh toán khi nhận hàng' }}
+            {{ ($order->payment && $order->payment->payment_method == 'paypal') ? 'Thanh toán PayPal' : 'Thanh toán khi nhận hàng' }}
         </p>
 
         <!-- Summary -->

@@ -52,10 +52,10 @@
                                     <div class="col-sm-4 invoice-col">
                                         Từ:
                                         <address>
-                                            <strong>{{ $order->shippingAddress->full_name }}</strong>
-                                            <br>{{ $order->shippingAddress->address }}
-                                            <br>{{ $order->shippingAddress->city }}
-                                            <br>Số điện thoại: {{ $order->shippingAddress->phone }}
+                                            <strong>{{ $order->shippingAddress ? $order->shippingAddress->full_name : 'N/A' }}</strong>
+                                            <br>{{ $order->shippingAddress ? $order->shippingAddress->address : 'N/A' }}
+                                            <br>{{ $order->shippingAddress ? $order->shippingAddress->city : 'N/A' }}
+                                            <br>Số điện thoại: {{ $order->shippingAddress ? $order->shippingAddress->phone : 'N/A' }}
                                         </address>
                                     </div>
                                     <!-- /.col -->
@@ -73,9 +73,9 @@
                                     <div class="col-sm-4 invoice-col">
                                         <b>Order ID: #{{ $order->id }}</b>
                                         <br>
-                                        <b>Email: {{ $order->user->email }}</b>
+                                        <b>Email: {{ $order->user ? $order->user->email : 'N/A' }}</b>
                                         <br>
-                                        <b>Tài khoản: {{ $order->user->name }}</b>
+                                        <b>Tài khoản: {{ $order->user ? $order->user->name : 'Tài khoản đã bị xóa' }}</b>
                                     </div>
                                     <!-- /.col -->
                                 </div>
@@ -98,9 +98,9 @@
                                                 @foreach ($order->orderItems as $item)
                                                     <tr>
                                                         <td>
-                                                            <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}" width="50px" border-radius="6px">
+                                                            <img src="{{ $item->product ? $item->product->image_url : '#' }}" alt="{{ $item->product ? $item->product->name : 'N/A' }}" width="50px" border-radius="6px">
                                                         </td>
-                                                        <td>{{ $item->product->name }}</td>
+                                                        <td>{{ $item->product ? $item->product->name : 'Sản phẩm đã bị xóa' }}</td>
                                                         <td>{{ number_format($item->price, 0, ',', '.') }} ₫ </td>
                                                         <td>{{ $item->quantity }}</td>
                                                         <td>{{ number_format($item->price * $item->quantity, 0, ',', '.') }} ₫
@@ -118,7 +118,7 @@
                                     <!-- accepted payments column -->
                                     <div class="col-md-6">
                                         <p class="lead">Phương thức thanh toán:</p>
-                                        @if ($order->payment->payment_method == 'paypal')
+                                        @if ($order->payment && $order->payment->payment_method == 'paypal')
                                             <img src="{{ asset('assets/admin/images/paypal.png') }}" alt="Paypal">
                                         @else
                                             <img src="{{ asset('assets/admin/images/cash.jpg') }}"
