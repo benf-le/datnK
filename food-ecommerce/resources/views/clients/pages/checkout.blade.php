@@ -88,7 +88,9 @@
                                     <h5 class="collapsed ltn__card-title">
                                         <input type="radio" name="payment_method" value="payos" id="payment_payos">
                                         <label for="payment_payos">
-                                            Thanh toán qua QR Code (PayOS) <img src="https://img.vietqr.io/image/vietqr-logo-brand.png" style="height: 25px; margin-left: 5px;">
+                                            Thanh toán qua QR Code (PayOS) 
+                                            <img src="{{ asset('assets/clients/img/icons/payos.svg') }}" alt="PayOS" style="height: 20px; margin-left: 5px; vertical-align: middle;">
+                                            <img src="{{ asset('assets/clients/img/icons/vietqr.png') }}" alt="VietQR" style="height: 20px; margin-left: 5px; vertical-align: middle;">
                                         </label>
                                     </h5>
                                 </div>

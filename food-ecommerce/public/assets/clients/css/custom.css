@@ -238,7 +238,9 @@
 .ltn__header-options-2 .mini-cart-icon a i,
 .ltn__header-options-2 .header-wishlist i {
     color: #ffffff !important;
+    background: transparent !important;
 }
+
 
 /* Mobile menu toggle stroke color */
 .ltn__header-options-2 .mobile-menu-toggle svg path {

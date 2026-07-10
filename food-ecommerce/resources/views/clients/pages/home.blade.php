@@ -80,32 +80,239 @@
     <!-- SLIDER AREA END -->
 
     <!-- BANNER AREA START -->
-    <div class="ltn__banner-area mt-120 mb-90">
+    @php
+        $rauCuCategory = $categories->first(function($cat) {
+            return stripos($cat->name, 'rau') !== false || stripos($cat->name, 'quả') !== false || stripos($cat->name, 'trái') !== false || stripos($cat->name, 'củ') !== false;
+        });
+        $thitCategory = $categories->first(function($cat) {
+            return stripos($cat->name, 'thịt') !== false || stripos($cat->name, 'bò') !== false || stripos($cat->name, 'heo') !== false || stripos($cat->name, 'gà') !== false;
+        });
+        $trungCategory = $categories->first(function($cat) {
+            return stripos($cat->name, 'trứng') !== false;
+        });
+    @endphp
+
+    <style>
+        .custom-banner-section {
+            margin-top: 120px;
+            margin-bottom: 90px;
+        }
+        .custom-banner-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            height: 100%;
+            min-height: 500px;
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        .custom-banner-card.small-card {
+            min-height: 235px;
+            align-items: center;
+        }
+        .custom-banner-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1;
+        }
+        .custom-banner-card:hover .custom-banner-bg {
+            transform: scale(1.08);
+        }
+        .custom-banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 2;
+            transition: all 0.4s ease;
+        }
+        .custom-banner-card.tall-card .custom-banner-overlay {
+            background: rgba(0, 0, 0, 0.25);
+        }
+        .custom-banner-content {
+            position: relative;
+            z-index: 3;
+            padding: 40px;
+            width: 100%;
+        }
+        .custom-banner-card.tall-card .custom-banner-content {
+            max-width: 90%;
+        }
+        .custom-banner-card.small-card .custom-banner-content {
+            max-width: 65%;
+            padding: 30px 40px;
+        }
+        .custom-banner-tag {
+            font-family: var(--ltn__body-font);
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ffffff;
+            margin-bottom: 10px;
+            padding: 4px 12px;
+            background-color: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(5px);
+            border-radius: 4px;
+        }
+        .custom-banner-title {
+            font-family: var(--ltn__heading-font);
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.25;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .custom-banner-card.small-card .custom-banner-title {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .custom-banner-desc {
+            font-family: var(--ltn__body-font);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 22px;
+            line-height: 1.6;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+        .custom-banner-card.small-card .custom-banner-desc {
+            font-size: 13.5px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .custom-banner-btn {
+            display: inline-flex;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff !important;
+            background-color: #5d9e19;
+            padding: 10px 24px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(93, 158, 25, 0.2);
+            border: none;
+        }
+        .custom-banner-btn:hover {
+            background-color: #0d3a2f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 58, 47, 0.3);
+        }
+        .custom-banner-btn i {
+            margin-left: 8px;
+            font-size: 11px;
+            transition: transform 0.3s ease;
+        }
+        .custom-banner-btn:hover i {
+            transform: translateX(4px);
+        }
+        
+        @media (max-width: 1199px) {
+            .custom-banner-card {
+                min-height: 460px;
+            }
+            .custom-banner-card.small-card {
+                min-height: 215px;
+            }
+            .custom-banner-title {
+                font-size: 28px;
+            }
+            .custom-banner-card.small-card .custom-banner-title {
+                font-size: 22px;
+            }
+        }
+        @media (max-width: 991px) {
+            .custom-banner-card {
+                min-height: 420px;
+            }
+            .custom-banner-card.small-card {
+                min-height: 220px;
+            }
+            .custom-banner-title {
+                font-size: 24px;
+            }
+            .custom-banner-card.small-card .custom-banner-title {
+                font-size: 20px;
+            }
+        }
+        @media (max-width: 767px) {
+            .custom-banner-card {
+                min-height: 360px;
+            }
+            .custom-banner-card.small-card {
+                min-height: 240px;
+                align-items: flex-end;
+            }
+            .custom-banner-card.small-card .custom-banner-overlay {
+                background: rgba(0, 0, 0, 0.25);
+            }
+            .custom-banner-card.small-card .custom-banner-content {
+                max-width: 100%;
+                padding: 24px;
+            }
+        }
+    </style>
+
+    <div class="ltn__banner-area custom-banner-section">
         <div class="container">
-            <div class="row ltn__custom-gutter--- justify-content-center">
-                <div class="col-lg-6 col-md-6">
-                    <div class="ltn__banner-item">
-                        <div class="ltn__banner-img">
-                            <a href="{{ route('products.index') }}"><img src="{{ asset('assets/clients/img/banner/13.png') }}"
-                                    alt="Banner Image"></a>
+            <div class="row justify-content-center">
+                <!-- Left Banner: Rau Củ Quả & Trái Cây -->
+                <div class="col-lg-6 col-md-6 mb-30">
+                    <div class="custom-banner-card tall-card">
+                        <div class="custom-banner-bg" style="background-image: url('{{ asset('assets/clients/img/banner/banner_rau_cu.png') }}');"></div>
+                        <div class="custom-banner-overlay"></div>
+                        <div class="custom-banner-content">
+                            <span class="custom-banner-tag">100% Organic</span>
+                            <h2 class="custom-banner-title">Rau Củ Quả<br>& Trái Cây Sạch</h2>
+                            <p class="custom-banner-desc">Rau lá xanh tươi, củ quả hữu cơ thu hoạch trong ngày từ trang trại chuẩn VietGAP.</p>
+                            <a href="{{ $rauCuCategory ? route('products.index', ['category_id' => $rauCuCategory->id]) : route('products.index') }}" class="custom-banner-btn">Mua Ngay <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
+
+                <!-- Right Banners -->
                 <div class="col-lg-6 col-md-6">
                     <div class="row">
-                        <div class="col-lg-12">
-                            <div class="ltn__banner-item">
-                                <div class="ltn__banner-img">
-                                    <a href="{{ route('products.index') }}"><img src="{{ asset('assets/clients/img/banner/14.png') }}"
-                                            alt="Banner Image"></a>
+                        <!-- Top Right Banner: Thịt Tươi Sống -->
+                        <div class="col-lg-12 mb-30">
+                            <div class="custom-banner-card small-card">
+                                <div class="custom-banner-bg" style="background-image: url('{{ asset('assets/clients/img/banner/banner_thit_tuoi.png') }}');"></div>
+                                <div class="custom-banner-overlay"></div>
+                                <div class="custom-banner-content">
+                                    <span class="custom-banner-tag">Thịt Tươi Sống</span>
+                                    <h2 class="custom-banner-title">Thịt Heo, Bò, Gà Sạch</h2>
+                                    <p class="custom-banner-desc">Thịt tươi ngon mỗi ngày, đóng gói hút chân không, bảo quản nghiêm ngặt.</p>
+                                    <a href="{{ $thitCategory ? route('products.index', ['category_id' => $thitCategory->id]) : route('products.index') }}" class="custom-banner-btn">Xem Ngay <i class="fas fa-arrow-right"></i></a>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-12">
-                            <div class="ltn__banner-item">
-                                <div class="ltn__banner-img">
-                                    <a href="{{ route('products.index') }}"><img src="{{ asset('assets/clients/img/banner/15.png') }}"
-                                            alt="Banner Image"></a>
+
+                        <!-- Bottom Right Banner: Trứng Gà, Vịt, Cút -->
+                        <div class="col-lg-12 mb-30">
+                            <div class="custom-banner-card small-card">
+                                <div class="custom-banner-bg" style="background-image: url('{{ asset('assets/clients/img/banner/banner_trung_sach.png') }}');"></div>
+                                <div class="custom-banner-overlay"></div>
+                                <div class="custom-banner-content">
+                                    <span class="custom-banner-tag">Trang Trại Sạch</span>
+                                    <h2 class="custom-banner-title">Trứng Gà, Vịt, Cút</h2>
+                                    <p class="custom-banner-desc">Trứng tươi mới tuyển chọn từ trang trại sinh thái, giàu dinh dưỡng.</p>
+                                    <a href="{{ $trungCategory ? route('products.index', ['category_id' => $trungCategory->id]) : route('products.index') }}" class="custom-banner-btn">Xem Ngay <i class="fas fa-arrow-right"></i></a>
                                 </div>
                             </div>
                         </div>

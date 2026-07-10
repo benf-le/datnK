@@ -1,6 +1,6 @@
 <!-- FOOTER AREA START -->
 <footer class="ltn__footer-area  ">
-    <div class="footer-top-area  section-bg-1 plr--5">
+    <div class="footer-top-area  section-bg-2 plr--5">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xl-3 col-md-6 col-sm-6 col-12">
@@ -79,9 +79,6 @@
                         <h4 class="footer-title">Hỗ trợ khách hàng</h4>
                         <div class="footer-menu">
                             <ul>
-                                <li><a href="{{ route('login') }}">Đăng nhập</a></li>
-                                <li><a href="{{ route('account') }}">Tài khoản</a></li>
-                                <li><a href="{{ route('wishlist') }}">Danh sách yêu thích</a></li>
                                 <li><a href="{{ route('faq') }}">FAQ</a></li>
                                 <li><a href="{{ route('contact') }}">Liên hệ</a></li>
                             </ul>
