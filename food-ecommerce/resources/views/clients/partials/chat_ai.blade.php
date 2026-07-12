@@ -22,12 +22,6 @@
                 </div>
             </div>
             <div class="chat-header-actions">
-                <button type="button" id="chat-reset" title="Bắt đầu lại">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-                    </svg>
-                </button>
                 <button type="button" id="chat-close" title="Đóng chat">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20"
                         height="20">
